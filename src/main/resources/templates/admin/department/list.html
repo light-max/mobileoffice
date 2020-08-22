@@ -1,0 +1,205 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>企业管理系统</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/admin.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+
+    <style>
+        td {
+            max-width: 300px;
+        }
+    </style>
+
+    <script>
+        function addDepartments() {
+            var form = new FormData();
+            form.append("name", $('#name').val());
+            form.append("des", $('#des').val());
+
+            var settings = {
+                "url": "/admin/department",
+                "method": "POST",
+                "processData": false,
+                "mimeType": "multipart/form-data",
+                "contentType": false,
+                "data": form,
+                "dataType": "json"
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.success) {
+                    window.location.reload();
+                } else {
+                    alert(response.message);
+                }
+            });
+        }
+
+        function updateDialog(id) {
+            var settings = {
+                "url": "/admin/department/" + id,
+                "method": "GET",
+                "dataType": "json"
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.success) {
+                    $('#update').modal('toggle');
+                    $('#u-id').val(response.data.id);
+                    $('#u-name').val(response.data.name);
+                    $('#u-des').val(response.data.des);
+                } else {
+                    // 一般情况下是部门不再存在，被其他管理员删了
+                    alert(response.message);
+                    window.location.reload();
+                }
+            });
+        }
+
+        function updateDepartment() {
+            var form = new FormData();
+            form.append("id", $('#u-id').val());
+            form.append("name", $('#u-name').val());
+            form.append("des", $('#u-des').val());
+
+            var settings = {
+                "url": "/admin/department",
+                "method": "PUT",
+                "processData": false,
+                "mimeType": "multipart/form-data",
+                "contentType": false,
+                "data": form,
+                "dataType": "json"
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.success) {
+                    window.location.reload();
+                } else {
+                    alert(response.message);
+                }
+            });
+        }
+
+        function deleteDepartment(id) {
+            if (confirm("你确定要删除这个部门吗?")) {
+                var settings = {
+                    "url": "/admin/department/" + id,
+                    "method": "DELETE",
+                    "dataType": "json"
+                };
+
+                $.ajax(settings).done(function (response) {
+                    if (response.success) {
+                        window.location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+
+<div th:replace="common/admin::navbar"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="common/admin::sidebarMenu"></div>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2"> 部门列表</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal"
+                            data-target="#add">添加部门
+                    </button>
+                </div>
+            </div>
+            <table class="table table-striped table-hover">
+                <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>部门名称</th>
+                    <th>部门描述</th>
+                    <th class="text-center">部门人数</th>
+                    <th class="text-center">创建时间</th>
+                    <th class="text-center">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="d:${departments}">
+                    <td th:text="${d.id}"></td>
+                    <td class="text-truncate" th:text="${d.name}"></td>
+                    <td class="text-truncate" th:text="${d.des}"></td>
+                    <td class="text-center">
+                        <a th:href="@{/admin/employee(department=${d.id})}" th:text="${d.count}"></a>
+                    </td>
+                    <td class="text-center" th:text="${d.translateDate()}"></td>
+                    <td class="text-center">
+                        <a href="#" class="btn-link text-danger" th:onclick="'deleteDepartment('+${d.id}+')'">删除</a>
+                        <a href="#" class="btn-link" th:onclick="'updateDialog('+${d.id}+')'">编辑</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <hr>
+            <div th:replace="common/admin::page"></div>
+            <br>
+            <br>
+            <br>
+        </main>
+    </div>
+</div>
+
+<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">添加部门</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input id="name" class="form-control" type="text" placeholder="请输入部门名称"><br>
+                <textarea id="des" class="form-control" rows="10" placeholder="请输入部门描述"></textarea><br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="addDepartments()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="update" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">修改部门信息</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input hidden id="u-id">
+                <input id="u-name" class="form-control" type="text" placeholder="请输入部门名称"><br>
+                <textarea id="u-des" class="form-control" rows="10" placeholder="请输入部门描述"></textarea><br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="updateDepartment()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

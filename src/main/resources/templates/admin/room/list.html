@@ -1,0 +1,313 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>企业管理系统</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/admin.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+
+    <style>
+        td {
+            max-width: 300px;
+        }
+    </style>
+
+    <script>
+        function addRoom() {
+            var form = new FormData();
+            form.append("name", $('#name').val());
+            form.append("location", $('#location').val());
+            form.append("capacity", $('#capacity').val())
+
+            var settings = {
+                "url": "/admin/room",
+                "method": "POST",
+                "processData": false,
+                "mimeType": "multipart/form-data",
+                "contentType": false,
+                "data": form,
+                "dataType": "json"
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.success) {
+                    window.location.reload();
+                } else {
+                    alert(response.message);
+                }
+            });
+        }
+
+        function updateDialog(id) {
+            var settings = {
+                "url": "/admin/room/" + id,
+                "method": "GET",
+                "dataType": "json"
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.success) {
+                    $('#update').modal('toggle');
+                    $('#u-id').val(response.data.id);
+                    $('#u-name').val(response.data.name);
+                    $('#u-location').val(response.data.location);
+                    $('#u-capacity').val(response.data.capacity);
+                } else {
+                    alert(response.message);
+                    window.location.reload();
+                }
+            });
+        }
+
+        function updateRoom() {
+            var form = new FormData();
+            form.append("id", $('#u-id').val());
+            form.append("name", $('#u-name').val());
+            form.append("location", $('#u-location').val());
+            form.append("capacity", $('#u-capacity').val())
+
+            var settings = {
+                "url": "/admin/room",
+                "method": "PUT",
+                "processData": false,
+                "mimeType": "multipart/form-data",
+                "contentType": false,
+                "data": form,
+                "dataType": "json"
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.success) {
+                    window.location.reload();
+                } else {
+                    alert(response.message);
+                }
+            });
+        }
+
+        function deleteRoom(id) {
+            if (confirm("你确定要删除这个会议室吗?")) {
+                var settings = {
+                    "url": "/admin/room/" + id,
+                    "method": "DELETE",
+                    "dataType": "json"
+                };
+
+                $.ajax(settings).done(function (response) {
+                    if (response.success) {
+                        window.location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                });
+            }
+        }
+
+        function deleteEquipment(obj) {
+            if (confirm("你真的要删除这个设备吗?")) {
+                var equipmentId = $(obj).parent().parent().find("th").text();
+                $.ajax({
+                    "url": "/admin/equipment/" + equipmentId,
+                    "method": "DELETE",
+                    "dataType": "json"
+                }).done(function (response) {
+                    if (response.success) {
+                        $(obj).parent().parent().remove();
+                    } else {
+                        alert(response.message);
+                    }
+                })
+            }
+        }
+
+        function equipmentDialog(roomId) {
+            // 获取会议室下所有的设备
+            $.ajax({
+                "url": "/admin/equipment/list?roomId=" + roomId,
+                "method": "GET",
+                "dataType": "json"
+            }).done(function (response) {
+                if (response.success) {
+                    if (0 === response.data.length) {
+                        alert('会议室还没有添加任何设备')
+                    }
+                    $('#e-list').html('');
+                    response.data.forEach(item => {
+                        $('#e-list').append(`<tr>
+                            <th>${item.id}</th>
+                            <td>${item.name}</td>
+                            <td>${item.des}</td>
+                            <td><a class="text-danger btn-link" href="#" onclick="deleteEquipment(this)">删除</a></td>
+                        </tr>`);
+                    });
+                    $('#equipments').modal('toggle');
+                } else {
+                    alert(response.message);
+                }
+            })
+
+            // 添加设备请求
+            $('#e-add').on('click', function () {
+                var form = new FormData();
+                form.append("roomId", roomId);
+                form.append("name", $('#e-name').val());
+                form.append("des", $('#e-des').val())
+
+                var settings = {
+                    "url": "/admin/equipment",
+                    "method": "POST",
+                    "processData": false,
+                    "mimeType": "multipart/form-data",
+                    "contentType": false,
+                    "data": form,
+                    "dataType": "json"
+                };
+
+                $.ajax(settings).done(function (response) {
+                    if (response.success) {
+                        $('#e-list').append(`<tr>
+                            <th>${response.data.id}</th>
+                            <td>${response.data.name}</td>
+                            <td>${response.data.des}</td>
+                            <td><a class="text-danger btn-link" href="#" onclick="deleteEquipment(this)">删除</a></td>
+                        </tr>`);
+                    } else {
+                        alert(response.message);
+                    }
+                });
+            })
+        }
+    </script>
+</head>
+<body>
+
+<div th:replace="common/admin::navbar"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="common/admin::sidebarMenu"></div>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2"> 会议室列表</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal"
+                            data-target="#add">添加会议室
+                    </button>
+                </div>
+            </div>
+            <table class="table table-striped table-hover">
+                <thead class="thead-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>名称</th>
+                    <th>地址</th>
+                    <th class="text-center">可容纳人数</th>
+                    <th class="text-center">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="room:${rooms}">
+                    <th th:text="${room.id}"></th>
+                    <td th:text="${room.name}"></td>
+                    <td class="text-truncate" th:text="${room.location}"></td>
+                    <td class="text-center" th:text="${room.capacity}"></td>
+                    <td class="text-center">
+                        <a class="btn-link" href="#" th:onclick="'equipmentDialog('+${room.id}+')'">设备</a>
+                        <a class="btn-link" href="#" th:onclick="'updateDialog('+${room.id}+')'">编辑</a>
+                        <a class="btn-link text-danger" href="#" th:onclick="'deleteRoom('+${room.id}+')'">删除</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <hr>
+            <div th:replace="common/admin::page"></div>
+            <br>
+            <br>
+            <br>
+        </main>
+    </div>
+</div>
+
+<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">添加会议室</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input id="name" class="form-control" type="text" placeholder="请输入会议室名称"><br>
+                <textarea id="location" class="form-control" rows="5" placeholder="请输入会议室地址描述"></textarea><br>
+                <input id="capacity" class="form-control" type="number" placeholder="可容纳人数"><br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="addRoom()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="update" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">添加部门</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input id="u-id" hidden>
+                <input id="u-name" class="form-control" type="text" placeholder="请输入会议室名称"><br>
+                <textarea id="u-location" class="form-control" rows="5" placeholder="请输入会议室地址描述"></textarea><br>
+                <input id="u-capacity" class="form-control" type="number" placeholder="可容纳人数"><br>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="updateRoom()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="equipments" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">设备列表</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped table-hover">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>设备名</th>
+                        <th>描述</th>
+                        <th style="width: 60px">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="e-list"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <div style="display: grid;grid-template-columns: 1fr 2fr auto;grid-column-gap: 10px">
+                    <input class="form-control" type="text" placeholder="请输入设备名称" id="e-name">
+                    <input class="form-control" type="text" placeholder="请输入设备描述" id="e-des">
+                    <button type="button" class="btn btn-primary" id="e-add">添加</button>
+                </div>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

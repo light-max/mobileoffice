@@ -1,0 +1,233 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>企业管理系统</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/admin.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+
+    <script>
+        function addNotice() {
+            var form = new FormData();
+            form.append("title", $('#title').val());
+            form.append("content", $('#content').val());
+            form.append("top", $('#top').prop('checked'));
+            var settings = {
+                "url": "/admin/notice",
+                "method": "POST",
+                "timeout": 0,
+                "processData": false,
+                "mimeType": "multipart/form-data",
+                "contentType": false,
+                "dataType": "json",
+                "data": form
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.status === 200) {
+                    window.location.reload();
+                } else {
+                    alert(response.message);
+                }
+            });
+        }
+
+        function deleteNotice(id) {
+            if (confirm('你确定要删除这个公告?')) {
+                var settings = {
+                    "url": "/admin/notice/" + id,
+                    "method": "DELETE",
+                };
+
+                $.ajax(settings).done(function (response) {
+                    if (response.status === 200) {
+                        window.location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                });
+            }
+        }
+
+        function updateDialog(id) {
+            var settings = {
+                "url": "/admin/notice/" + id,
+                "method": "GET",
+                "dataType": "json"
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.status === 200) {
+                    $('#update').modal('toggle');
+                    $('#u-id').val(response.data.id);
+                    $('#u-title').val(response.data.title);
+                    $('#u-content').val(response.data.content);
+                    $('#u-top').prop('checked', response.data.top);
+                } else {
+                    alert(response.message);
+                }
+            });
+        }
+
+        function update() {
+            var form = new FormData();
+            form.append("id", $('#u-id').val());
+            form.append("title", $('#u-title').val());
+            form.append("content", $('#u-content').val());
+            form.append("top", $('#u-top').prop('checked'));
+
+            var settings = {
+                "url": "/admin/notice",
+                "method": "PUT",
+                "timeout": 0,
+                "processData": false,
+                "mimeType": "multipart/form-data",
+                "contentType": false,
+                "dataType": "json",
+                "data": form,
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.status === 200) {
+                    window.location.reload();
+                } else {
+                    alert(response.message);
+                }
+            });
+        }
+    </script>
+    <style>
+        .notice-div {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            grid-column-gap: 20px;
+        }
+
+        .list {
+            display: grid;
+            grid-gap: 10px;
+        }
+
+        .list-child {
+            display: grid;
+            grid-template-columns: 1fr auto;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="common/admin::navbar"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="common/admin::sidebarMenu"></div>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">公告列表</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal"
+                            data-target="#add">添加公告
+                    </button>
+                </div>
+            </div>
+            <div class="notice-div">
+                <div class="list">
+                    <div class="card list-child" th:each="notice: ${notices}">
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${notice.title}"></h5>
+                            <p class="card-text" th:text="${notice.content}"></p>
+                            <span class="text-secondary" th:text="${notice.translateDate()}"></span>
+                        </div>
+                        <div class="card-body">
+                            <a class="card-link" href="#" th:onclick="'updateDialog('+${notice.id}+')'">编辑</a><br>
+                            <a class="card-link" href="#">查看</a><br>
+                            <a class="card-link text-danger" href="#"
+                               th:onclick="'deleteNotice('+${notice.id}+')'">删除</a>
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <div class="card" th:if="${top}!=null">
+                        <h5 class="card-header text-danger">置顶内容</h5>
+                        <div class="card-body">
+                            <h5 class="card-title" th:text="${top.title}"></h5>
+                            <p class="card-text" th:text="${top.content}"></p>
+                            <p class="text-secondary" th:text="${top.translateDate()}"></p>
+                            <a class="card-link" href="#" th:onclick="'updateDialog('+${top.id}+')'">编辑</a>
+                            <a class="card-link" href="#">查看</a>
+                            <a class="card-link text-danger" href="#"
+                               th:onclick="'deleteNotice('+${top.id}+')'">删除</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div th:replace="common/admin::page"></div>
+            <br>
+            <br>
+            <br>
+        </main>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">添加公告</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input id="title" class="form-control" type="text" placeholder="请输入公告标题"><br>
+                <textarea id="content" class="form-control" rows="10" placeholder="请输入公告内容"></textarea><br>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="top">
+                    <label class="custom-control-label" for="top">置顶显示</label>
+                    <small>（只有一个公告能被置顶）</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="addNotice()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="update" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">添加公告</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input hidden id="u-id">
+                <input class="form-control" type="text" placeholder="请输入公告标题" id="u-title"><br>
+                <textarea class="form-control" rows="10" placeholder="请输入公告内容" id="u-content"></textarea><br>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="u-top">
+                    <label class="custom-control-label" for="u-top">置顶显示</label>
+                    <small>（只有一个公告能被置顶）</small>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="update()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

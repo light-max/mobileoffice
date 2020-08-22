@@ -1,0 +1,35 @@
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<nav th:fragment="navigation" class="nav nav-pills flex-column left-nav">
+    <a class="nav-link navbar-brand" href="/sys">
+        <img src="/favicon.ico" class="d-inline-block align-top" width="30" height="30"/>
+        首页
+    </a>
+    <a class="nav-link" href="/sys/admin/list" th:classappend="${view=='list'}?'active':''">管理员列表</a>
+    <a class="nav-link" href="/sys/logout">退出登陆</a>
+</nav>
+
+<!--/*@thymesVar id="pager" type="com.lfq.mobileoffice.model.data.Pager"*/-->
+<nav th:fragment="page" aria-label="Page navigation example">
+    <ul class="pagination justify-content-end">
+        <li class="page-item" th:if="${pager.currentPage!=1}">
+            <a class="page-link" th:href="@{{url}/{index}(url=${pager.url},index=1)}">首页</a>
+        </li>
+        <li class="page-item" th:if="${pager.currentPage>1}">
+            <a class="page-link" th:href="@{{url}/{index}(url=${pager.url},index=${pager.currentPage}-1)}">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        <li class="page-item" th:each="i:${#numbers.sequence(pager.beginIndex(),pager.endIndex())}"
+            th:classappend="${pager.currentPage==i}?'active':''">
+            <a class="page-link" th:href="@{{url}/{index}(url=${pager.url},index=${i})}" th:text="${i}"></a>
+        </li>
+        <li class="page-item" th:if="${pager.currentPage<pager.pageCount}">
+            <a class="page-link" th:href="@{{url}/{index}(url=${pager.url},index=${pager.currentPage+1})}">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        <li class="page-item" th:if="${pager.currentPage!=pager.pageCount}">
+            <a class="page-link" th:href="@{{url}/{index}(url=${pager.url},index=${pager.pageCount})}">尾页[[${pager.pageCount}]]</a>
+        </li>
+    </ul>
+</nav>

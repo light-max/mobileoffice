@@ -1,0 +1,275 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>企业管理系统</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/admin.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+
+    <style>
+        th {
+            max-width: 300px;
+        }
+    </style>
+
+    <script>
+        function addEmployee() {
+            var form = new FormData();
+            form.append("name", $('#name').val());
+            form.append("idNumber", $('#idNumber').val());
+            form.append("contact", $('#contact').val());
+            form.append("address", $('#address').val());
+            form.append("department", $('#department').val());
+
+            var settings = {
+                "url": "/admin/employee",
+                "method": "POST",
+                "processData": false,
+                "mimeType": "multipart/form-data",
+                "contentType": false,
+                "data": form,
+                "dataType": "json"
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.success) {
+                    window.location.reload();
+                } else {
+                    alert(response.message);
+                }
+            });
+        }
+
+        function updateDialog(id) {
+            var settings = {
+                "url": "/admin/employee/" + id,
+                "method": "GET",
+                "dataType": "json"
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.success) {
+                    $('#update').modal('toggle');
+                    $('#u-id').val(response.data.id);
+                    $('#u-name').val(response.data.name);
+                    $('#u-idNumber').val(response.data.idNumber);
+                    $('#u-contact').val(response.data.contact);
+                    $('#u-address').val(response.data.address);
+                    $('#u-department').val(response.data.department == null ? 0 : response.data.department);
+                } else {
+                    alert(response.message);
+                    window.location.reload();
+                }
+            });
+        }
+
+        function updateEmployee() {
+            var form = new FormData();
+            form.append("id", $('#u-id').val());
+            form.append("name", $('#u-name').val());
+            form.append("idNumber", $('#u-idNumber').val());
+            form.append("contact", $('#u-contact').val());
+            form.append("address", $('#u-address').val());
+            form.append("department", $('#u-department').val());
+
+            var settings = {
+                "url": "/admin/employee",
+                "method": "PUT",
+                "processData": false,
+                "mimeType": "multipart/form-data",
+                "contentType": false,
+                "data": form,
+                "dataType": "json"
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.success) {
+                    window.location.reload();
+                } else {
+                    alert(response.message);
+                }
+            });
+        }
+
+        function deleteEmployee(id) {
+            if (confirm("你确定要删除这个员工吗?")) {
+                var settings = {
+                    "url": "/admin/employee/" + id,
+                    "method": "DELETE",
+                    "dataType": "json"
+                };
+
+                $.ajax(settings).done(function (response) {
+                    if (response.success) {
+                        window.location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                });
+            }
+        }
+
+        function resetPwd(id) {
+            if (confirm("你确定要重置这个员工的密码吗？（重置后默认密码为1）")) {
+                var settings = {
+                    "url": "/admin/employee/resetpwd/" + id,
+                    "method": "PUT",
+                    "dataType": "json"
+                };
+
+                $.ajax(settings).done(function (response) {
+                    alert(response.message);
+                });
+            }
+        }
+
+        function select(obj) {
+            var s = window.location.href.replace('#', '');
+            s = s.replace(/\/list\/\d+/, '');
+            var split = s.split('?');
+            if (obj.value == 0 || obj.value == '0') {
+                window.location.href = split[0];
+            } else {
+                window.location.href = split[0] + '?department=' + obj.value;
+            }
+        }
+    </script>
+</head>
+<body>
+
+<div th:replace="common/admin::navbar"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="common/admin::sidebarMenu"></div>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">员工列表</h1>
+                <div class="btn-toolbar mb-2 mb-md-0 row">
+                    <select class="custom-select col" style="margin-right: 20px;max-width: 200px;"
+                            onchange="select(this)">
+                        <option value="0">全部</option>
+                        <option th:each="d:${departments}" th:text="${d.name}" th:value="${d.id}"></option>
+                    </select>
+                    <button type="button" class="btn btn-sm btn-outline-secondary col" data-toggle="modal"
+                            data-target="#add">添加员工
+                    </button>
+                </div>
+            </div>
+            <table class="table table-striped table-hover">
+                <thead class="thead-dark">
+                <tr>
+                    <th>工号</th>
+                    <th>姓名</th>
+                    <th>性别</th>
+                    <th>联系方式</th>
+                    <th>身份证号码</th>
+                    <th>现居住地</th>
+                    <th>部门</th>
+                    <!--                    <th>等级</th>-->
+                    <th>入职日期</th>
+                    <th class="text-center">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="e:${employees}">
+                    <td th:text="${e.id}"></td>
+                    <td th:text="${e.name}"></td>
+                    <td th:text="${e.sex=='male'?'男':'女'}"></td>
+                    <td th:text="${e.contact}"></td>
+                    <td th:text="${e.idNumber}"></td>
+                    <td class="text-truncate" th:text="${e.address}"></td>
+                    <td class="text-truncate"
+                        th:text="${departmentMap.get(e.department)!=null?departmentMap.get(e.department).name:'未分配'}"></td>
+                    <!--                    <td th:text="等级"></td>-->
+                    <td th:text="${e.translateDate()}"></td>
+                    <td class="text-center">
+                        <a href="#" class="btn-link" th:onclick="'resetPwd('+${e.id}+')'">重置密码</a>
+                        <a href="#" class="btn-link" th:onclick="'updateDialog('+${e.id}+')'">编辑</a>
+                        <a href="#" class="btn-link text-danger" th:onclick="'deleteEmployee('+${e.id}+')'">删除</a>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <hr>
+            <div th:replace="common/admin::page"></div>
+            <br>
+            <br>
+            <br>
+        </main>
+    </div>
+</div>
+
+<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">添加员工</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input id="name" class="form-control" type="text" placeholder="请输入员工姓名"><br>
+                <input id="idNumber" class="form-control" type="text" placeholder="请输入员工身份证号码"><br>
+                <input id="contact" class="form-control" type="text" placeholder="请输入员工联系方式"><br>
+                <input id="address" class="form-control" type="text" placeholder="请输入员工现居住地"><br>
+                <select class="custom-select" id="department">
+                    <option value="0">不分配</option>
+                    <option th:each="d:${departments}" th:text="${d.name}" th:value="${d.id}"></option>
+                </select>
+                <small class="form-text text-muted">
+                    为员工选择一个部门
+                </small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="addEmployee()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="update" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">修改员工信息</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input id="u-id" hidden>
+                <input id="u-name" class="form-control" type="text" placeholder="请输入员工姓名"><br>
+                <input id="u-idNumber" class="form-control" type="text" placeholder="请输入员工身份证号码"><br>
+                <input id="u-contact" class="form-control" type="text" placeholder="请输入员工联系方式"><br>
+                <input id="u-address" class="form-control" type="text" placeholder="请输入员工现居住地"><br>
+                <select class="custom-select" id="u-department">
+                    <option value="0">不分配</option>
+                    <option th:each="d:${departments}" th:text="${d.name}" th:value="${d.id}"></option>
+                </select>
+                <small class="form-text text-muted">
+                    为员工选择一个部门
+                </small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" onclick="updateEmployee()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript" th:inline="javascript">
+    $().ready(function () {
+        var single = [[${department}]];
+        $("option[value= " + single + "]").prop("selected", true);
+    });
+</script>
+</html>
