@@ -36,6 +36,11 @@
                     会议室
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link" th:classappend="${view=='room-apply'?'active':''}" href="/admin/apply/room?status=1">
+                    会议室预约
+                </a>
+            </li>
         </ul>
     </div>
 </nav>

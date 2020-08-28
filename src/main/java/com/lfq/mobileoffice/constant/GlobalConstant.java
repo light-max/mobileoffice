@@ -49,6 +49,10 @@ public enum GlobalConstant implements Assert {
     equipmentDesFormat("设备描述不能超过100个字符"),
     equipmentNotExists("设备不存在"),
 
+    roomApplyTime("会议室使用结束时间必须在开始之后"),
+    roomApplyTime1("不能选择已经过去的时间"),
+    roomApplyDesFormat("备注不能超过200个字符"),
+    roomApplyDuplicateTimePeriod("时间段不能与其他申请重复"),
     ;
 
     private String message;

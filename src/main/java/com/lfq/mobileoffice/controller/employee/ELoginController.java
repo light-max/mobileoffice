@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
 
+/**
+ * 员工登陆控制器
+ */
 @Controller
 public class ELoginController {
 
@@ -32,6 +35,18 @@ public class ELoginController {
             session.setAttribute("employee", response.getData());
         }
         return response;
+    }
+
+    /**
+     * 提交登陆请求
+     */
+    @PostMapping(value = "/employee/login", produces = "text/html")
+    public String login(HttpSession session, String username, String pwd) {
+        Response<Employee> response = loginService.employee(Integer.parseInt(username), pwd);
+        if (response.isSuccess()) {
+            session.setAttribute("employee", response.getData());
+        }
+        return "/login";
     }
 
     /**

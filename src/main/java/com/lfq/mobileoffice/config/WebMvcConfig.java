@@ -1,6 +1,7 @@
 package com.lfq.mobileoffice.config;
 
 import com.lfq.mobileoffice.config.interceptor.AdminInterceptor;
+import com.lfq.mobileoffice.config.interceptor.EmployeeInterceptor;
 import com.lfq.mobileoffice.config.interceptor.GlobalInterceptor;
 import com.lfq.mobileoffice.config.interceptor.SystemAdminInterceptor;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +26,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .excludePathPatterns("/admin/notloggedin");
         registry.addInterceptor(new GlobalInterceptor())
                 .addPathPatterns("/**");
+        registry.addInterceptor(new EmployeeInterceptor())
+                .addPathPatterns("/apply/room/**");// 员工申请会议室
     }
 
     @Override

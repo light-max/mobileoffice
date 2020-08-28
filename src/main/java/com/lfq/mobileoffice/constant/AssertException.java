@@ -9,5 +9,5 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class AssertException extends RuntimeException {
-    private String message;
+    private final String message;
 }

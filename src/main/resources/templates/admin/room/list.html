@@ -206,6 +206,7 @@
                     <th>名称</th>
                     <th>地址</th>
                     <th class="text-center">可容纳人数</th>
+                    <th class="text-center">状态</th>
                     <th class="text-center">操作</th>
                 </tr>
                 </thead>
@@ -215,6 +216,10 @@
                     <td th:text="${room.name}"></td>
                     <td class="text-truncate" th:text="${room.location}"></td>
                     <td class="text-center" th:text="${room.capacity}"></td>
+                    <td class="text-center">
+                        <span class="text-danger" th:if="${room.currentApplyId>0}">使用中</span>
+                        <span class="text-success" th:if="${room.currentApplyId<=0}">空闲中</span>
+                    </td>
                     <td class="text-center">
                         <a class="btn-link" href="#" th:onclick="'equipmentDialog('+${room.id}+')'">设备</a>
                         <a class="btn-link" href="#" th:onclick="'updateDialog('+${room.id}+')'">编辑</a>

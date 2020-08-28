@@ -29,4 +29,11 @@ public class Room {
 
     /*** 会议室可容纳人数 */
     private Integer capacity;
+
+    /**
+     * 当前是否正在被使用
+     * 0  : 当前处于空闲状态
+     * 其他: 代表申请记录的ID,可以通过这个ID查询到申请者,起始时间和结束时间
+     */
+    private Long currentApplyId;
 }

@@ -1,0 +1,277 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>企业管理系统</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/admin.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+
+    <script>
+        function select(obj) {
+            if (obj.value == 1) {
+                window.location.href = "/admin/apply/room/?status=1";
+            } else {
+                window.location.href = "/admin/apply/room/";
+            }
+        }
+
+        function showRoom(roomId) {
+            var settings = {
+                "url": "/room/" + roomId,
+                "method": "GET",
+                "timeout": 0,
+                "dataType": "JSON"
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.success) {
+                    var data = response.data;
+                    $('#room').modal('toggle');
+                    $('#r-id').val(data.id);
+                    $('#r-name').val(data.name);
+                    $('#r-location').val(data.location);
+                    $('#r-capacity').val(data.capacity);
+                }
+            });
+        }
+
+        async function getDepartmentName(departmentId) {
+            var name = "未分配";
+            var setting = {
+                "url": "/department/" + departmentId,
+                "method": "GET",
+                "timeout": 0,
+                "dataType": "JSON"
+            };
+
+            await $.ajax(setting).done(async function (response) {
+                if (response.success) {
+                    name = response.data.name;
+                }
+            });
+
+            return name;
+        }
+
+        function showEmployee(employeeId) {
+            var settings = {
+                "url": "/employee/" + employeeId,
+                "method": "GET",
+                "timeout": 0,
+                "dataType": "JSON"
+            };
+
+            $.ajax(settings).done(async function (response) {
+                if (response.success) {
+                    var data = response.data;
+                    $('#employee').modal('toggle');
+                    $('#e-id').val(data.id);
+                    $('#e-sex').val(data.sex.replace("male", "男").replace("female", "女"));
+                    $('#e-address').val(data.address);
+                    $('#e-contact').val(data.contact);
+                    $('#e-department').val(await getDepartmentName(data.department));
+                }
+            });
+        }
+
+        function approve(id) {
+            var settings = {
+                "url": "/admin/apply/room/approve/" + id,
+                "method": "POST",
+                "timeout": 0,
+                "dataType": "json"
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.success) {
+                    window.location.reload();
+                } else {
+                    alert(response.message);
+                }
+            });
+        }
+
+        function refuse(id) {
+            if (confirm("你确定要拒绝这条申请?")) {
+                var settings = {
+                    "url": "/admin/apply/room/refuse/" + id,
+                    "method": "POST",
+                    "timeout": 0,
+                    "dataType": "json"
+                };
+
+                $.ajax(settings).done(function (response) {
+                    if (response.success) {
+                        window.location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                });
+            }
+        }
+    </script>
+</head>
+<body>
+
+<div th:replace="common/admin::navbar"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="common/admin::sidebarMenu"></div>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">会议室预约申请列表</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <select class="custom-select col" onchange="select(this)">
+                        <option value="1">待审核的预约</option>
+                        <option value="0">所有预约</option>
+                    </select>
+                    &nbsp;&nbsp;
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal"
+                            data-target="#add">同意所有申请
+                    </button>
+                    &nbsp;&nbsp;
+                    <button type="button" class="btn btn-sm btn-outline-secondary" data-toggle="modal"
+                            data-target="#add">拒绝所有申请
+                    </button>
+                </div>
+            </div>
+            <h2 th:if="${list.isEmpty()}" class="text-center">当前还没有要处理的预约</h2>
+            <table th:if="${!list.isEmpty()}" class="table table-striped table-hover">
+                <thead class="thead-dark">
+                <tr>
+                    <th style="width: 50px">ID</th>
+                    <th style="width: 100px">会议室</th>
+                    <th style="width: 100px">员工</th>
+                    <th class="text-center" style="width: 380px">预约时间</th>
+                    <th style="width: 1fr">备注</th>
+                    <th class="text-center" style="width: 80px">状态</th>
+                    <th class="text-center" style="width: 200px">时间</th>
+                    <th class="text-center" style="width: 100px">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="l:${list}">
+                    <th th:text="${l.id}"></th>
+                    <td class="text-truncate">
+                        <a href="#" th:text="${roomMap.get(l.roomId).name}"
+                           th:onclick="'showRoom('+${l.roomId}+')'"></a>
+                    </td>
+                    <td class="text-truncate">
+                        <a href="#" th:text="${employeeMap.get(l.employeeId).name}"
+                           th:onclick="'showEmployee('+${l.employeeId}+')'"></a>
+                    </td>
+                    <td class="text-center" th:text="${l.reservationTime}"></td>
+                    <td th:text="${l.des}"></td>
+                    <th class="text-center" th:utext="${l.getStatusText()}"></th>
+                    <td class="text-center" th:text="${l.translateDate()}"></td>
+                    <td class="text-center">
+                        <span th:if="${l.status==1}">
+                            <a href="#" class="btn-link text-primary" th:onclick="'approve('+${l.id}+')'">同意</a>
+                            <a href="#" class="btn-link text-danger" th:onclick="'refuse('+${l.id}+')'">拒绝</a>
+                        </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <hr>
+            <div th:replace="common/admin::page"></div>
+            <br>
+            <br>
+            <br>
+        </main>
+    </div>
+</div>
+<!--会议室详情对话框-->
+<div class="modal fade" id="room" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">会议室详情</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="r-id">ID</label>
+                    <input readonly type="number" class="form-control" id="r-id">
+                </div>
+                <div class="form-group">
+                    <label for="r-name">会议室名称</label>
+                    <input readonly type="text" class="form-control" id="r-name">
+                </div>
+                <div class="form-group">
+                    <label for="r-location">会议室地址</label>
+                    <textarea readonly type="text" class="form-control" id="r-location"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="r-capacity">可容纳人数</label>
+                    <input readonly type="number" class="form-control" id="r-capacity">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!--员工详情对话框-->
+<div class="modal fade" id="employee" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">员工信息</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="e-id">ID</label>
+                    <input readonly type="number" class="form-control" id="e-id">
+                </div>
+                <div class="form-group">
+                    <label for="e-idNumber">员工身份证号码</label>
+                    <input readonly type="text" class="form-control" id="e-idNumber">
+                </div>
+                <div class="form-group">
+                    <label for="e-sex">性别</label>
+                    <input readonly type="text" class="form-control" id="e-sex">
+                </div>
+                <div class="form-group">
+                    <label for="e-address">现居住地</label>
+                    <input readonly type="text" class="form-control" id="e-address">
+                </div>
+                <div class="form-group">
+                    <label for="e-contact">联系方式</label>
+                    <input readonly type="text" class="form-control" id="e-contact">
+                </div>
+                <div class="form-group">
+                    <label for="e-department">部门</label>
+                    <input readonly type="text" class="form-control" id="e-department">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript" th:inline="javascript">
+    $().ready(function () {
+        var single = [[${status}]];
+        if (single) {
+            $("option[value= " + single + "]").prop("selected", true);
+        } else {
+            $("option[value=0]").prop("selected", true);
+        }
+    });
+</script>
+</html>
