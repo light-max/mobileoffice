@@ -20,6 +20,8 @@ import java.util.List;
 
 /**
  * 通知管理控制器
+ *
+ * @author 李凤强
  */
 @Controller
 public class NoticeController {

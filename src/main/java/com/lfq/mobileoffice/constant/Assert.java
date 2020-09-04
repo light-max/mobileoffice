@@ -2,6 +2,8 @@ package com.lfq.mobileoffice.constant;
 
 /**
  * 自定义断言类
+ *
+ * @author 李凤强
  */
 public interface Assert {
     default void newException() {

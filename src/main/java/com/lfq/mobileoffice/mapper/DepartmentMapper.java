@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 /**
  * 部门表映射器
+ *
+ * @author 李凤强
  */
 @Repository
 public interface DepartmentMapper extends BaseMapper<Department> {

@@ -18,6 +18,8 @@ import java.util.Map;
 
 /**
  * 管理员会议室申请控制器
+ *
+ * @author 李凤强
  */
 @Controller
 public class ARoomApplyController {

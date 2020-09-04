@@ -17,6 +17,8 @@ import javax.annotation.Resource;
 
 /**
  * 员工会议室申请控制器
+ *
+ * @author 李凤强
  */
 @Controller
 @RequestMapping("/apply/room")

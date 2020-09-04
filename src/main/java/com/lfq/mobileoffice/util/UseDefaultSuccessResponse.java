@@ -9,6 +9,8 @@ import java.lang.annotation.Target;
 
 /**
  * 标识了这个注解的请求的void方法意味着需要返回一个{@link Response#success()}结果
+ *
+ * @author 李凤强
  * @see com.lfq.mobileoffice.config.interceptor.GlobalInterceptor
  */
 @Target(ElementType.METHOD)

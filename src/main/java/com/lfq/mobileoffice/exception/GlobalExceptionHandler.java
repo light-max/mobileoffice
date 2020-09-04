@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * 全局异常处理器
+ *
+ * @author 李凤强
  */
 @ControllerAdvice
 public class GlobalExceptionHandler {

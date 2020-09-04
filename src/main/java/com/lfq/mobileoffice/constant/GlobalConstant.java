@@ -5,6 +5,8 @@ import lombok.Getter;
 
 /**
  * 一些用于响应请求的全局常量
+ *
+ * @author 李凤强
  */
 @Getter
 @AllArgsConstructor

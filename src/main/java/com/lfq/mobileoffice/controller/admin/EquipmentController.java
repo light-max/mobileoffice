@@ -15,6 +15,8 @@ import java.util.List;
 
 /**
  * 会议室设备控制器
+ *
+ * @author 李凤强
  */
 @Controller
 public class EquipmentController {

@@ -7,6 +7,8 @@ import com.lfq.mobileoffice.model.entity.SysAdmin;
 
 /**
  * 登陆服务
+ *
+ * @author 李凤强
  */
 public interface LoginService {
 

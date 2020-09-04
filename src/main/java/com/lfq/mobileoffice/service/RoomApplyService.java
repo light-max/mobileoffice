@@ -14,6 +14,8 @@ import java.util.Map;
 
 /**
  * 会议室申请服务
+ *
+ * @author 李凤强
  */
 public interface RoomApplyService extends IService<RoomApply> {
     /**

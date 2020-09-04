@@ -5,6 +5,8 @@ import lombok.Data;
 
 /**
  * 分页实体类
+ *
+ * @author 李凤强
  */
 @Data
 public class Pager {

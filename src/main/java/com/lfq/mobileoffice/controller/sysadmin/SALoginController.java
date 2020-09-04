@@ -17,6 +17,8 @@ import javax.servlet.http.HttpSession;
 
 /**
  * 系统管理员登陆控制器
+ *
+ * @author 李凤强
  */
 @Controller
 public class SALoginController {

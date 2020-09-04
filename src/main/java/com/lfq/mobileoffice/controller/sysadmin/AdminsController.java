@@ -1,10 +1,8 @@
 package com.lfq.mobileoffice.controller.sysadmin;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lfq.mobileoffice.constant.AssertException;
 import com.lfq.mobileoffice.model.data.Pager;
-import com.lfq.mobileoffice.model.data.Response;
 import com.lfq.mobileoffice.model.entity.Admin;
 import com.lfq.mobileoffice.service.AdminService;
 import com.lfq.mobileoffice.util.UseDefaultSuccessResponse;
@@ -18,6 +16,8 @@ import java.util.List;
 
 /**
  * 管理员账号管理控制器
+ *
+ * @author 李凤强
  */
 @Controller
 public class AdminsController {

@@ -13,6 +13,8 @@ import java.lang.reflect.Method;
 /**
  * 全局拦截器，处理带有{@link UseDefaultSuccessResponse}注解的请求的返回值，
  * 返回数据{@link Response#success()}
+ *
+ * @author 李凤强
  */
 public class GlobalInterceptor implements HandlerInterceptor {
     @Override

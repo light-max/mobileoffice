@@ -6,6 +6,8 @@ import com.lfq.mobileoffice.model.entity.Department;
 
 /**
  * 部门服务
+ *
+ * @author 李凤强
  */
 public interface DepartmentService extends IService<Department> {
     /**

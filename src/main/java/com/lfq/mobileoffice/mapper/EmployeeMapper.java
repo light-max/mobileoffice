@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 /**
  * 员工表映射器
+ *
+ * @author 李凤强
  */
 @Repository
 public interface EmployeeMapper extends BaseMapper<Employee> {

@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 
 /**
  * 把controller方法中的{@link ViewModelParameter}注解的值注入到{@link Model}
+ *
+ * @author 李凤强
  * @see ViewModelParameter
  * @see ViewModelParameters
  */

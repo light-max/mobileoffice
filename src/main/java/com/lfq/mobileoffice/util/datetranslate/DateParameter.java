@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 /**
  * 自定义日期格式化注解
  *
+ * @author 李凤强
  * @see DateTranslate
  */
 @Target(ElementType.FIELD)

@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 
 /**
  * 管理员表实体
+ *
+ * @author 李凤强
  */
 @Data
 @Builder

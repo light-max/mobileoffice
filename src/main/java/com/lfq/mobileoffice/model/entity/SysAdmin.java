@@ -6,6 +6,8 @@ import lombok.Data;
 
 /**
  * 系统管理员表实体类
+ *
+ * @author 李凤强
  */
 @TableName("T_sys_admin")
 @Data

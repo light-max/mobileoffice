@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 
 /**
  * 部门表实体类
+ *
+ * @author 李凤强
  */
 @Data
 @Builder

@@ -1,7 +1,5 @@
 package com.lfq.mobileoffice.util;
 
-import org.springframework.util.StringUtils;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -10,6 +8,9 @@ import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * @author 李凤强
+ */
 public class IdCardCheckUtil {
     /*********************************** 身份证验证开始 ****************************************/
     /**
@@ -192,11 +193,11 @@ public class IdCardCheckUtil {
     public static boolean isMale(String id) {
         String result = IDCardValidate(id);
 //        if (result.trim().length() != 0) {
-            if (id.length() == 15) {
-                return Integer.parseInt(id.substring(14, 15)) % 2 != 0;
-            } else if (id.length() == 18) {
-                return Integer.parseInt(id.substring(16, 17)) % 2 != 0;
-            }
+        if (id.length() == 15) {
+            return Integer.parseInt(id.substring(14, 15)) % 2 != 0;
+        } else if (id.length() == 18) {
+            return Integer.parseInt(id.substring(16, 17)) % 2 != 0;
+        }
 //        }
         return true;
     }

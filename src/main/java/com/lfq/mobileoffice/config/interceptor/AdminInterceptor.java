@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * 检查管理员账号是否登陆的拦截器
+ *
+ * @author 李凤强
  */
 public class AdminInterceptor implements HandlerInterceptor {
     @Override

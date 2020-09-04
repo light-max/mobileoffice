@@ -6,6 +6,8 @@ import com.lfq.mobileoffice.model.entity.Equipment;
 
 /**
  * 设备管理服务
+ *
+ * @author 李凤强
  */
 public interface EquipmentService extends IService<Equipment> {
     /**

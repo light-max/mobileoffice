@@ -4,6 +4,8 @@ import lombok.Getter;
 
 /**
  * 分页与数据
+ *
+ * @author 李凤强
  */
 @Getter
 public class PagerData {

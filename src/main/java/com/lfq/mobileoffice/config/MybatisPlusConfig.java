@@ -7,6 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
+/**
+ * @author 李凤强
+ */
 @EnableTransactionManagement(proxyTargetClass = true)  //能够使用声明式事务管理
 @Configuration
 @MapperScan("com.lfq.mobileoffice.mapper")

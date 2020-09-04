@@ -6,6 +6,8 @@ import com.lfq.mobileoffice.model.entity.Admin;
 
 /**
  * 管理员服务
+ *
+ * @author 李凤强
  */
 public interface AdminService extends IService<Admin> {
 

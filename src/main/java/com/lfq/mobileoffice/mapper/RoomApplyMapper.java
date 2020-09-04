@@ -6,6 +6,8 @@ import jdk.jfr.Registered;
 
 /**
  * 会议室申请表映射器
+ *
+ * @author 李凤强
  */
 @Registered
 public interface RoomApplyMapper extends BaseMapper<RoomApply> {

@@ -11,6 +11,8 @@ import java.util.Map;
 
 /**
  * 员工管理服务
+ *
+ * @author 李凤强
  */
 public interface EmployeeService extends IService<Employee> {
     /**

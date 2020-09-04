@@ -17,6 +17,8 @@ import javax.servlet.http.HttpSession;
 
 /**
  * 管理员登陆请求
+ *
+ * @author 李凤强
  */
 @Controller
 public class ALoginController {

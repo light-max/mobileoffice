@@ -6,6 +6,8 @@ import com.lfq.mobileoffice.model.entity.Notice;
 
 /**
  * 通知服务
+ *
+ * @author 李凤强
  */
 public interface NoticeService extends IService<Notice> {
 

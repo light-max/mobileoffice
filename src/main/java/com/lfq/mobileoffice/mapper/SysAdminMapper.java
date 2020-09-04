@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 /**
  * 系统管理员表映射器
+ *
+ * @author 李凤强
  */
 @Repository
 public interface SysAdminMapper extends BaseMapper<SysAdmin> {

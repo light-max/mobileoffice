@@ -6,6 +6,8 @@ import org.springframework.stereotype.Repository;
 
 /**
  * 设备表映射器
+ *
+ * @author 李凤强
  */
 @Repository
 public interface EquipmentMapper extends BaseMapper<Equipment> {

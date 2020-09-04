@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * MP 自动填充类
+ *
+ * @author 李凤强
  */
 @Component
 public class CommonMetaObjectHandler implements MetaObjectHandler {

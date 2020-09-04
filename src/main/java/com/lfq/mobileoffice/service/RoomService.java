@@ -6,6 +6,8 @@ import com.lfq.mobileoffice.model.entity.Room;
 
 /**
  * 会议室管理服务
+ *
+ * @author 李凤强
  */
 public interface RoomService extends IService<Room> {
     /**

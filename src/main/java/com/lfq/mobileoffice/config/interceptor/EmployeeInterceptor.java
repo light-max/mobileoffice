@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 
 /**
  * 员工未登录拦截器
+ *
+ * @author 李凤强
  */
 public class EmployeeInterceptor implements HandlerInterceptor {
     @Override

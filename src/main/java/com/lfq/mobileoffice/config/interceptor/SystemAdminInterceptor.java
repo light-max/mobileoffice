@@ -8,6 +8,8 @@ import javax.servlet.http.HttpSession;
 
 /**
  * 检查系统管理员账号是否登陆的拦截器
+ *
+ * @author 李凤强
  */
 public class SystemAdminInterceptor implements HandlerInterceptor {
     @Override

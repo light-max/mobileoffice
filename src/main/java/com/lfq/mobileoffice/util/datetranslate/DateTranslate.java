@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 /**
  * 日期格式化注解的接口
  *
+ * @author 李凤强
  * @see DateParameter
  */
 public interface DateTranslate {

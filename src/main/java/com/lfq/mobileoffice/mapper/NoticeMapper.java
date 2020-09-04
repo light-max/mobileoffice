@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 /**
  * 通知表映射器
+ *
+ * @author 李凤强
  */
 @Repository
 public interface NoticeMapper extends BaseMapper<Notice> {

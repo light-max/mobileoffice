@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 
 /**
  * 通知表的实体类
+ *
+ * @author 李凤强
  */
 @TableName("T_notice")
 @Data

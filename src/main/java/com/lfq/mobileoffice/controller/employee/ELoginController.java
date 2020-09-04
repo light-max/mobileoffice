@@ -17,6 +17,8 @@ import javax.servlet.http.HttpSession;
 
 /**
  * 员工登陆控制器
+ *
+ * @author 李凤强
  */
 @Controller
 public class ELoginController {
