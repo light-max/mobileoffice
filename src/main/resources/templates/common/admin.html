@@ -17,28 +17,38 @@
     <div class="sidebar-sticky pt-3">
         <ul class="nav flex-column mb-2">
             <li class="nav-item">
-                <a class="nav-link" th:classappend="${view=='notice'?'active':''}" href="/admin/notice">
+                <a class="nav-link font-weight-bold" th:classappend="${view=='notice'?'active':''}"
+                   href="/admin/notice">
                     公告管理
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:classappend="${view=='department'?'active':''}" href="/admin/department">
+                <a class="nav-link font-weight-bold" th:classappend="${view=='department'?'active':''}"
+                   href="/admin/department">
                     部门管理
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:classappend="${view=='employee'?'active':''}" href="/admin/employee">
+                <a class="nav-link font-weight-bold" th:classappend="${view=='employee'?'active':''}"
+                   href="/admin/employee">
                     员工管理
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:classappend="${view=='room'?'active':''}" href="/admin/room">
+                <a class="nav-link font-weight-bold" th:classappend="${view=='room'?'active':''}" href="/admin/room">
                     会议室
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" th:classappend="${view=='room-apply'?'active':''}" href="/admin/apply/room?status=1">
+                <a class="nav-link font-weight-bold" th:classappend="${view=='room-apply'?'active':''}"
+                   href="/admin/apply/room?status=1">
                     会议室预约
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link font-weight-bold" th:classappend="${view=='leave-review'?'active':''}"
+                   href="/admin/leave/review?status=1">
+                    请假审核
                 </a>
             </li>
         </ul>

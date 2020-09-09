@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @TableName("T_wrfl_file")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class WRFLFile {
     /*** id */
     @TableId(type = IdType.AUTO)
@@ -25,5 +27,5 @@ public class WRFLFile {
     private Long wrflId;
 
     /*** 资源id */
-    private Long resourceId;
+    private String resourceId;
 }

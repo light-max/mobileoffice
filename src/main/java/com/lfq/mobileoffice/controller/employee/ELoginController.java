@@ -70,6 +70,6 @@ public class ELoginController {
     @GetMapping("/employee/notloggedin")
     @ResponseBody
     public Response<Object> notLogin() {
-        return Response.error(GlobalConstant.noAccess.getMessage());
+        return Response.denied(GlobalConstant.noAccess.getMessage());
     }
 }

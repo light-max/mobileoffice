@@ -17,7 +17,15 @@ spring:
     hiddenmethod:
       filter:
         enabled: true
-mybatis-plus:
-  configuration:
-    map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  servlet:
+    multipart:
+      max-file-size: 100MB
+#mybatis-plus:
+#  configuration:
+#    map-underscore-to-camel-case: true
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+mobileoffice:
+  file-path:
+    employee: F:/mobileoffice/employee
+  global-exception:
+    assert-exception: true

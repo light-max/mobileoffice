@@ -48,7 +48,7 @@ public class RoomApplyTask implements CommandLineRunner {
                 .le(RoomApply::getStart, System.currentTimeMillis())
                 .set(RoomApply::getStatus, 4);
         roomApplyService.update(wrapper);
-        System.out.println("task1: ");
+//        System.out.println("task1: ");
     }
 
 //    public static void main(String[] args) {
@@ -77,7 +77,7 @@ public class RoomApplyTask implements CommandLineRunner {
                     .set(Room::getCurrentApplyId, r.getId());
             roomService.update(updateWrapper);
         }
-        System.out.println("task2");
+//        System.out.println("task2");
     }
 
     /**
@@ -108,7 +108,7 @@ public class RoomApplyTask implements CommandLineRunner {
                 roomApplyService.update(wrapper);
             }
         }
-        System.out.println("task3");
+//        System.out.println("task3");
     }
 
     // 测试

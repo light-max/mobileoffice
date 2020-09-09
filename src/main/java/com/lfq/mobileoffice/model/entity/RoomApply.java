@@ -40,12 +40,12 @@ public class RoomApply implements DateTranslate {
     private Long end;
 
     /**
-     * 当前状态
-     * 1,申请中
-     * 2,同意
-     * 3,拒绝
-     * 4,已过期
-     * 5,已被使用
+     * 当前状态<ul>
+     * <li>1,申请中</li>
+     * <li>2,同意</li>
+     * <li>3,拒绝</li>
+     * <li>4,已过期</li>
+     * <li>5,已被使用</li></ul>
      */
     private Integer status;
 

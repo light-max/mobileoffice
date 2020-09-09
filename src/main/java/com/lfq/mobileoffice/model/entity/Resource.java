@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -16,10 +17,11 @@ import lombok.NoArgsConstructor;
 @TableName("T_resource")
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Resource {
-    /*** id */
-    @TableId(type = IdType.AUTO)
-    private Long id;
+    /*** id,url,相对存储路径 */
+    @TableId(type = IdType.ASSIGN_UUID)
+    private String id;
 
     /*** MediaType */
     private String type;
@@ -27,9 +29,10 @@ public class Resource {
     /*** 资源名称 */
     private String name;
 
-    /*** 存储路径, 相对路径, 使用md5计算出来 */
-    private String location;
-
     /*** 资源大小 */
     private Long size;
+
+    /*** 上传者的id */
+    private Integer employeeId;
+
 }

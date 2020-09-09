@@ -29,7 +29,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(new GlobalInterceptor())
                 .addPathPatterns("/**");
         registry.addInterceptor(new EmployeeInterceptor())
-                .addPathPatterns("/apply/room/**");// 员工申请会议室
+                .addPathPatterns("/apply/room/**")// 员工申请会议室
+                .addPathPatterns("/leave/application/**")// 员工请假请求
+                .addPathPatterns("/employee/resource")// 员工上传&删除文件请求
+        ;
     }
 
     @Override

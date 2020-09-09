@@ -74,4 +74,14 @@ public interface RoomApplyService extends IService<RoomApply> {
      * @param status 新状态, 参考{@link RoomApply#getStatus()}
      */
     void updateStatus(int id, int status);
+
+    /**
+     * 同意所有预约申请
+     */
+    void approveAll();
+
+    /**
+     * 拒绝所有预约申请
+     */
+    void refuseAll();
 }

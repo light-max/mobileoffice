@@ -55,6 +55,16 @@ public enum GlobalConstant implements Assert {
     roomApplyTime1("不能选择已经过去的时间"),
     roomApplyDesFormat("备注不能超过200个字符"),
     roomApplyDuplicateTimePeriod("时间段不能与其他申请重复"),
+
+    wrflTime("开始时间必须在结束时间之前"),
+    wrflTypeNotExists("请假类型不存在，请重新选择"),
+    wrflDesFormat("请假原因不能多余200个字符"),
+    wrflTypeExists("已有这个类型的假期"),
+    wrflTypeFormat("类型名称必须在2~10个字符以内"),
+    wrflTypeBind("该类型下有请假申请，不能删除"),
+
+    resourceNotExists("资源文件不存在"),
+    resourceEmpty("没有资源文件"),
     ;
 
     private String message;

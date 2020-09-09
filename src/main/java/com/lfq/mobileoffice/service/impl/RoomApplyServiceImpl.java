@@ -107,7 +107,8 @@ public class RoomApplyServiceImpl extends ServiceImpl<RoomApplyMapper, RoomApply
             // 如果是申请中的记录，直接返回全部，不做分页
             // 按道理来说某个员工待受理的记录肯定是寥寥无几的
             if (status == 1) {
-
+                // 2020年9月7日
+                return page(new Page<>(1, Integer.MAX_VALUE), wrapper);
             }
         }
         return page(new Page<>(currentPage == null ? 1 : currentPage, 15), wrapper);
@@ -151,6 +152,24 @@ public class RoomApplyServiceImpl extends ServiceImpl<RoomApplyMapper, RoomApply
                 .lambda()
                 .eq(RoomApply::getId, id)
                 .set(RoomApply::getStatus, status);
+        update(wrapper);
+    }
+
+    @Override
+    public void approveAll() {
+        LambdaUpdateWrapper<RoomApply> wrapper = new UpdateWrapper<RoomApply>()
+                .lambda()
+                .eq(RoomApply::getStatus, 1)
+                .set(RoomApply::getStatus, 2);
+        update(wrapper);
+    }
+
+    @Override
+    public void refuseAll() {
+        LambdaUpdateWrapper<RoomApply> wrapper = new UpdateWrapper<RoomApply>()
+                .lambda()
+                .eq(RoomApply::getStatus, 1)
+                .set(RoomApply::getStatus, 3);
         update(wrapper);
     }
 }

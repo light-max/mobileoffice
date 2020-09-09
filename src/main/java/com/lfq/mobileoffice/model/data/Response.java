@@ -50,6 +50,16 @@ public class Response<T> {
         return error(null);
     }
 
+    /**
+     * 拒绝访问
+     */
+    public static <T> Response<T> denied(String message) {
+        Response<T> response = new Response<>();
+        response.status = 403;
+        response.message = message;
+        return response;
+    }
+
     public static Response<PagerData> pager(Pager pager, Object data) {
         return success(new PagerData(pager, data));
     }

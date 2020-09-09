@@ -12,35 +12,52 @@
 
     <script>
         function select(obj) {
-            if (obj.value == 1) {
-                window.location.href = "/admin/apply/room/?status=1";
-            } else {
-                window.location.href = "/admin/apply/room/";
+            switch (obj.value) {
+                case 0:
+                case "0":
+                    window.location.href = "/admin/leave/review";
+                    break
+                case 1:
+                case "1":
+                    window.location.href = "/admin/leave/review?status=1";
+                    break
             }
         }
 
-        // 显示会议室信息
-        function showRoom(roomId) {
-            var settings = {
-                "url": "/room/" + roomId,
-                "method": "GET",
-                "timeout": 0,
-                "dataType": "JSON"
+        // 显示这个请假申请的附件
+        function fileDialog(id) {
+            var setting = {
+                url: "/leave/file/" + id,
+                method: "GET",
+                dataType: "JSON",
+                timeout: 0
             };
-
-            $.ajax(settings).done(function (response) {
+            $.ajax(setting).done(function (response) {
                 if (response.success) {
-                    var data = response.data;
-                    $('#room').modal('toggle');
-                    $('#r-id').val(data.id);
-                    $('#r-name').val(data.name);
-                    $('#r-location').val(data.location);
-                    $('#r-capacity').val(data.capacity);
+                    $("#files").modal("toggle");
+                    var body = $("#f-tbody");
+                    body.html("");
+                    response.data.forEach(r => {
+                        body.append(`<tr>
+<th>${r.id}</th>
+<td>${r.type}</td>
+<td>${r.name}</td>
+<td>${r.size}</td>
+<td><a href="/resource/${r.id}" target="_blank">查看</a> </td>
+</tr>`);
+                    });
+                } else {
+                    alert(response.message);
                 }
-            });
+            })
         }
 
-        // 根据员工id获取员工部门名称
+        // 展示被折叠的文本
+        function showText(obj) {
+            alert($(obj).html())
+        }
+
+        // 根据员工id获取部门名称
         async function getDepartmentName(departmentId) {
             var name = "未分配";
             var setting = {
@@ -59,7 +76,7 @@
             return name;
         }
 
-        // 显示员工信息对话框
+        // 显示请假人|员工信息对话框
         function showEmployee(employeeId) {
             var settings = {
                 "url": "/employee/" + employeeId,
@@ -71,6 +88,7 @@
             $.ajax(settings).done(async function (response) {
                 if (response.success) {
                     var data = response.data;
+                    console.log(data);
                     $('#employee').modal('toggle');
                     $('#e-id').val(data.id);
                     $('#e-sex').val(data.sex.replace("male", "男").replace("female", "女"));
@@ -85,7 +103,7 @@
         // 同意申请
         function approve(id) {
             var settings = {
-                "url": "/admin/apply/room/approve/" + id,
+                "url": "/admin/leave/review/approve/" + id,
                 "method": "POST",
                 "timeout": 0,
                 "dataType": "json"
@@ -104,7 +122,7 @@
         function refuse(id) {
             if (confirm("你确定要拒绝这条申请?")) {
                 var settings = {
-                    "url": "/admin/apply/room/refuse/" + id,
+                    "url": "/admin/leave/review/refuse/" + id,
                     "method": "POST",
                     "timeout": 0,
                     "dataType": "json"
@@ -122,7 +140,7 @@
 
         // 同意所以申请
         function approveAll() {
-            if (confirm("你确定要同意所有申请吗?")) {
+            if (confirm("你确定要同意所有请假申请吗?")) {
                 var settings = {
                     "url": "/admin/leave/review/approveall",
                     "method": "POST",
@@ -142,7 +160,7 @@
 
         // 拒绝所有申请
         function refuseAll() {
-            if (confirm("你确定要拒绝所有申请吗?")) {
+            if (confirm("你确定要拒绝所有请假申请吗?")) {
                 var settings = {
                     "url": "/admin/leave/review/refuseall",
                     "method": "POST",
@@ -160,10 +178,86 @@
             }
         }
 
+        // 显示请假类型对话框
+        function leaveType() {
+            var settings = {
+                "url": "/admin/leave/review/types",
+                "method": "GET",
+                "timeout": 0,
+                "dataType": "JSON"
+            };
+
+            var append = function (o) {
+                $('#t-body').append(`<tr>
+<th>${o.id}</th>
+<td>${o.name}</td>
+<td><a href="#" class="btn-link text-danger" onclick="deleteLeaveType(this)">删除</a></td>
+</tr>`);
+            }
+
+            $.ajax(settings).done(function (response) {
+                if (response.success) {
+                    $('#types').modal("toggle");
+                    $('#t-body').html("");
+                    response.data.forEach(o => {
+                        append(o);
+                    })
+                } else {
+                    alert(response.message);
+                }
+            });
+
+            // 添加请假类型
+            $('#t-add').on("click", function () {
+                var form = new FormData();
+                form.append("name", $('#t-name').val());
+
+                var setting = {
+                    "url": "/admin/leave/review/type",
+                    "method": "POST",
+                    "timeout": 0,
+                    "dataType": "JSON",
+                    "processData": false,
+                    "mimeType": "multipart/form-data",
+                    "contentType": false,
+                    "data": form
+                };
+
+                $.ajax(setting).done(function (response) {
+                    if (response.success) {
+                        append(response.data);
+                    } else {
+                        alert(response.message);
+                    }
+                });
+            })
+        }
+
+        // 删除请假类型
+        function deleteLeaveType(a) {
+            var tr = a.parentNode.parentNode;
+            if (confirm("你确定要删除这个类型吗?")) {
+                var settings = {
+                    "url": "/admin/leave/review/type/" + tr.children[0].innerHTML,
+                    "method": "DELETE",
+                    "timeout": 0,
+                    "dataType": "JSON"
+                };
+
+                $.ajax(settings).done(function (response) {
+                    if (response.success) {
+                        $(tr).remove();
+                    } else {
+                        alert(response.message);
+                    }
+                });
+            }
+        }
+
     </script>
     <style>
-        th {
-            max-width: 300px;
+        td {
+            max-width: 350px;
         }
     </style>
 </head>
@@ -176,19 +270,23 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">会议室预约申请列表</h1>
+                <h1 class="h2">请假申请列表</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <select class="custom-select col" onchange="select(this)">
-                        <option value="1">待审核的预约</option>
-                        <option value="0">所有预约</option>
+                        <option value="1">待批准的请假条</option>
+                        <option value="0">所有请假条</option>
                     </select>
                     &nbsp;&nbsp;
                     <button type="button" class="btn btn-sm btn-outline-secondary"
-                            onclick="approveAll()">同意所有申请
+                            onclick="leaveType()">请假类型管理
                     </button>
                     &nbsp;&nbsp;
                     <button type="button" class="btn btn-sm btn-outline-secondary"
-                            onclick="refuseAll()">拒绝所有申请
+                            onclick="approveAll()">同意所有
+                    </button>
+                    &nbsp;&nbsp;
+                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                            onclick="refuseAll()">拒绝所有
                     </button>
                 </div>
             </div>
@@ -197,29 +295,30 @@
                 <thead class="thead-dark">
                 <tr>
                     <th style="width: 50px">ID</th>
-                    <th style="width: 100px">会议室</th>
-                    <th style="width: 100px">员工</th>
-                    <th class="text-center" style="width: 380px">预约时间</th>
-                    <th style="width: 1fr">备注</th>
-                    <th class="text-center" style="width: 80px">状态</th>
-                    <th class="text-center" style="width: 200px">时间</th>
-                    <th class="text-center" style="width: 100px">操作</th>
+                    <th class="text-center" style="width: 100px">请假人</th>
+                    <th class="text-center" style="width: 120px">请假类型</th>
+                    <th class="text-center" style="width: 380px">请假时间</th>
+                    <th style="width: 1fr">请假原因</th>
+                    <th style="width: 100px">状态</th>
+                    <th style="width: 80px">附件</th>
+                    <th class="text-center" style="width: 200px">申请时间</th>
+                    <th class="text-center" style="width: 120px">操作</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="l:${list}">
                     <th th:text="${l.id}"></th>
-                    <td class="text-truncate">
-                        <a href="#" th:text="${roomMap.get(l.roomId).name}"
-                           th:onclick="'showRoom('+${l.roomId}+')'"></a>
-                    </td>
-                    <td class="text-truncate">
-                        <a href="#" th:text="${employeeMap.get(l.employeeId).name}"
+                    <td class="text-center">
+                        <a href="#" class="btn-link" th:text="${employeeMap.get(l.employeeId).getName()}"
                            th:onclick="'showEmployee('+${l.employeeId}+')'"></a>
                     </td>
-                    <td class="text-center" th:text="${l.reservationTime}"></td>
-                    <td th:text="${l.des}"></td>
-                    <th class="text-center" th:utext="${l.getStatusText()}"></th>
+                    <td class="text-center" th:text="${typesMap.get(l.type)}"></td>
+                    <td class="text-center" th:text="${l.getReservationTime()}"></td>
+                    <td style="cursor: pointer" class="text-truncate" th:text="${l.des}" onclick="showText(this)"></td>
+                    <th th:utext="${l.getStatusText()}"></th>
+                    <td>
+                        <a href="#" class="btn-link" th:onclick="'fileDialog('+${l.id}+')'">查看</a>
+                    </td>
                     <td class="text-center" th:text="${l.translateDate()}"></td>
                     <td class="text-center">
                         <span th:if="${l.status==1}">
@@ -238,40 +337,34 @@
         </main>
     </div>
 </div>
-<!--会议室详情对话框-->
-<div class="modal fade" id="room" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal">
+
+<div class="modal fade" id="files" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title">会议室详情</h5>
+                <h5 class="modal-title">文件列表</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <div class="form-group">
-                    <label for="r-id">ID</label>
-                    <input readonly type="number" class="form-control" id="r-id">
-                </div>
-                <div class="form-group">
-                    <label for="r-name">会议室名称</label>
-                    <input readonly type="text" class="form-control" id="r-name">
-                </div>
-                <div class="form-group">
-                    <label for="r-location">会议室地址</label>
-                    <textarea readonly type="text" class="form-control" id="r-location"></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="r-capacity">可容纳人数</label>
-                    <input readonly type="number" class="form-control" id="r-capacity">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                <table class="table">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>类型</th>
+                        <th>名称</th>
+                        <th>大小</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="f-tbody"></tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
+
 <!--员工详情对话框-->
 <div class="modal fade" id="employee" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal">
@@ -309,6 +402,37 @@
                 </div>
             </div>
             <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--请假类型列表对话框-->
+<div class="modal fade" id="types" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">请假类型列表</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                    <tr>
+                        <th style="width: 60px">ID</th>
+                        <th>类型</th>
+                        <th style="width: 60px">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="t-body"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer" style="display: grid;grid-template-columns: 1fr auto auto;grid-column-gap: 10px">
+                <input class="form-control" type="text" placeholder="请输入设备描述" id="t-name">
+                <button type="button" class="btn btn-primary" id="t-add">添加</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
             </div>
         </div>

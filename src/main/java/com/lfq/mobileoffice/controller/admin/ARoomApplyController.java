@@ -77,4 +77,24 @@ public class ARoomApplyController {
     public void refuse(@PathVariable Integer applyId) {
         roomApplyService.updateStatus(applyId, 3);
     }
+
+    /**
+     * 同意所有申请
+     */
+    @PostMapping("/admin/apply/room/approveall")
+    @ResponseBody
+    @UseDefaultSuccessResponse
+    public void approveAll() {
+        roomApplyService.approveAll();
+    }
+
+    /**
+     * 拒绝所有申请
+     */
+    @PostMapping("/admin/apply/room/refuseall")
+    @ResponseBody
+    @UseDefaultSuccessResponse
+    public void refuseAll() {
+        roomApplyService.refuseAll();
+    }
 }
