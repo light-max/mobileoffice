@@ -45,4 +45,16 @@ public class EResourceController {
     public void delete(@PathVariable("resourceId") String resourceId) {
         resourceService.deleteFile(resourceId);
     }
+
+    /**
+     * 删除多个
+     */
+    @DeleteMapping
+    @ResponseBody
+    @UseDefaultSuccessResponse
+    public void delete(String[] ids) {
+        for (String resource : ids) {
+            resourceService.deleteFile(resource);
+        }
+    }
 }

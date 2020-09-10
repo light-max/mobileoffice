@@ -58,8 +58,9 @@ public interface LeaveService extends IService<WRFL> {
      * 根据请假条id获取请假条所带的附件
      *
      * @param wrflId 请假条id
-     * @return
+     * @return 如果没有附件就返回null
      */
+    @Nullable
     List<Resource> getResources(Long wrflId);
 
     /**

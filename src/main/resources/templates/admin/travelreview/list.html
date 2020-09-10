@@ -15,11 +15,11 @@
             switch (obj.value) {
                 case 0:
                 case "0":
-                    window.location.href = "/admin/leave/review";
+                    window.location.href = "/admin/travel/review";
                     break
                 case 1:
                 case "1":
-                    window.location.href = "/admin/leave/review?status=1";
+                    window.location.href = "/admin/travel/review?status=1";
                     break
             }
         }
@@ -27,7 +27,7 @@
         // 显示这个请假申请的附件
         function fileDialog(id) {
             var setting = {
-                url: "/leave/file/" + id,
+                url: "/travel/file/" + id,
                 method: "GET",
                 dataType: "JSON",
                 timeout: 0
@@ -103,7 +103,7 @@
         // 同意申请
         function approve(id) {
             var settings = {
-                "url": "/admin/leave/review/approve/" + id,
+                "url": "/admin/travel/review/approve/" + id,
                 "method": "POST",
                 "timeout": 0,
                 "dataType": "json"
@@ -122,7 +122,7 @@
         function refuse(id) {
             if (confirm("你确定要拒绝这条申请?")) {
                 var settings = {
-                    "url": "/admin/leave/review/refuse/" + id,
+                    "url": "/admin/travel/review/refuse/" + id,
                     "method": "POST",
                     "timeout": 0,
                     "dataType": "json"
@@ -140,9 +140,9 @@
 
         // 同意所以申请
         function approveAll() {
-            if (confirm("你确定要同意所有请假申请吗?")) {
+            if (confirm("你确定要同意所有出差申请吗?")) {
                 var settings = {
-                    "url": "/admin/leave/review/approveall",
+                    "url": "/admin/travel/review/approveall",
                     "method": "POST",
                     "timeout": 0,
                     "dataType": "JSON"
@@ -160,9 +160,9 @@
 
         // 拒绝所有申请
         function refuseAll() {
-            if (confirm("你确定要拒绝所有请假申请吗?")) {
+            if (confirm("你确定要拒绝所有出差申请吗?")) {
                 var settings = {
-                    "url": "/admin/leave/review/refuseall",
+                    "url": "/admin/travel/review/refuseall",
                     "method": "POST",
                     "timeout": 0,
                     "dataType": "JSON"
@@ -171,82 +171,6 @@
                 $.ajax(settings).done(function (response) {
                     if (response.success) {
                         window.location.reload();
-                    } else {
-                        alert(response.message);
-                    }
-                });
-            }
-        }
-
-        // 显示请假类型对话框
-        function leaveType() {
-            var settings = {
-                "url": "/admin/leave/review/types",
-                "method": "GET",
-                "timeout": 0,
-                "dataType": "JSON"
-            };
-
-            var append = function (o) {
-                $('#t-body').append(`<tr>
-<th>${o.id}</th>
-<td>${o.name}</td>
-<td><a href="#" class="btn-link text-danger" onclick="deleteLeaveType(this)">删除</a></td>
-</tr>`);
-            }
-
-            $.ajax(settings).done(function (response) {
-                if (response.success) {
-                    $('#types').modal("toggle");
-                    $('#t-body').html("");
-                    response.data.forEach(o => {
-                        append(o);
-                    })
-                } else {
-                    alert(response.message);
-                }
-            });
-
-            // 添加请假类型
-            $('#t-add').on("click", function () {
-                var form = new FormData();
-                form.append("name", $('#t-name').val());
-
-                var setting = {
-                    "url": "/admin/leave/review/type",
-                    "method": "POST",
-                    "timeout": 0,
-                    "dataType": "JSON",
-                    "processData": false,
-                    "mimeType": "multipart/form-data",
-                    "contentType": false,
-                    "data": form
-                };
-
-                $.ajax(setting).done(function (response) {
-                    if (response.success) {
-                        append(response.data);
-                    } else {
-                        alert(response.message);
-                    }
-                });
-            })
-        }
-
-        // 删除请假类型
-        function deleteLeaveType(a) {
-            var tr = a.parentNode.parentNode;
-            if (confirm("你确定要删除这个类型吗?")) {
-                var settings = {
-                    "url": "/admin/leave/review/type/" + tr.children[0].innerHTML,
-                    "method": "DELETE",
-                    "timeout": 0,
-                    "dataType": "JSON"
-                };
-
-                $.ajax(settings).done(function (response) {
-                    if (response.success) {
-                        $(tr).remove();
                     } else {
                         alert(response.message);
                     }
@@ -270,16 +194,12 @@
 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
             <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                <h1 class="h2">请假申请列表</h1>
+                <h1 class="h2">出差申请列表</h1>
                 <div class="btn-toolbar mb-2 mb-md-0">
                     <select class="custom-select col" onchange="select(this)">
-                        <option value="1">待批准的请假条</option>
-                        <option value="0">所有请假条</option>
+                        <option value="1">待批准的出差</option>
+                        <option value="0">所有请出差</option>
                     </select>
-                    &nbsp;&nbsp;
-                    <button type="button" class="btn btn-sm btn-outline-secondary"
-                            onclick="leaveType()">请假类型管理
-                    </button>
                     &nbsp;&nbsp;
                     <button type="button" class="btn btn-sm btn-outline-secondary"
                             onclick="approveAll()">同意所有
@@ -295,10 +215,10 @@
                 <thead class="thead-dark">
                 <tr>
                     <th style="width: 50px">ID</th>
-                    <th class="text-center" style="width: 100px">请假人</th>
-                    <th class="text-center" style="width: 120px">请假类型</th>
-                    <th class="text-center" style="width: 380px">请假时间</th>
-                    <th style="width: 1fr">请假原因</th>
+                    <th class="text-center" style="width: 100px">出差人</th>
+                    <th class="text-center" style="width: 380px">出差时间</th>
+                    <th style="width: 1fr">出差事由</th>
+                    <th style="width: 1fr">出差地址</th>
                     <th style="width: 100px">状态</th>
                     <th style="width: 80px">附件</th>
                     <th class="text-center" style="width: 200px">申请时间</th>
@@ -312,9 +232,9 @@
                         <a href="#" class="btn-link" th:text="${employeeMap.get(l.employeeId).getName()}"
                            th:onclick="'showEmployee('+${l.employeeId}+')'"></a>
                     </td>
-                    <td class="text-center" th:text="${typesMap.get(l.type)}"></td>
                     <td class="text-center" th:text="${l.getReservationTime()}"></td>
                     <td style="cursor: pointer" class="text-truncate" th:text="${l.des}" onclick="showText(this)"></td>
+                    <td style="cursor: pointer" class="text-truncate" th:text="${l.address}" onclick="showText(this)"></td>
                     <th th:utext="${l.getStatusText()}"></th>
                     <td>
                         <a href="#" class="btn-link" th:onclick="'fileDialog('+${l.id}+')'">查看</a>
@@ -338,6 +258,7 @@
     </div>
 </div>
 
+<!--文件列表对话框-->
 <div class="modal fade" id="files" tabindex="-1" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered modal-xl">
         <div class="modal-content">
@@ -402,37 +323,6 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-            </div>
-        </div>
-    </div>
-</div>
-
-<!--请假类型列表对话框-->
-<div class="modal fade" id="types" tabindex="-1" role="dialog" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">请假类型列表</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <table class="table table-striped">
-                    <thead class="table-dark">
-                    <tr>
-                        <th style="width: 60px">ID</th>
-                        <th>类型</th>
-                        <th style="width: 60px">操作</th>
-                    </tr>
-                    </thead>
-                    <tbody id="t-body"></tbody>
-                </table>
-            </div>
-            <div class="modal-footer" style="display: grid;grid-template-columns: 1fr auto auto;grid-column-gap: 10px">
-                <input class="form-control" type="text" placeholder="请输入设备描述" id="t-name">
-                <button type="button" class="btn btn-primary" id="t-add">添加</button>
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
             </div>
         </div>

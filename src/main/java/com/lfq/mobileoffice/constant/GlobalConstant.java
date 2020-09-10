@@ -65,6 +65,10 @@ public enum GlobalConstant implements Assert {
 
     resourceNotExists("资源文件不存在"),
     resourceEmpty("没有资源文件"),
+
+    btTime("开始时间必须在结束时间之前"),
+    btDesFormat("出差事由不能超过200个字符"),
+    btAddress("出差地址不能超过200个字符"),
     ;
 
     private String message;

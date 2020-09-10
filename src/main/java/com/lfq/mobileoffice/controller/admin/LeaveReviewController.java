@@ -72,7 +72,7 @@ public class LeaveReviewController {
     @ResponseBody
     public Response<List<Resource>> resources(@PathVariable Long wrflId) {
         List<Resource> resources = leaveService.getResources(wrflId);
-        GlobalConstant.resourceEmpty.isTrue(!resources.isEmpty());
+        GlobalConstant.resourceEmpty.notNull(resources);
         return Response.success(resources);
     }
 

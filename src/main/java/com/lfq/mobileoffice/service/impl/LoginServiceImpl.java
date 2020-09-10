@@ -1,5 +1,6 @@
 package com.lfq.mobileoffice.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.lfq.mobileoffice.constant.AssertException;
 import com.lfq.mobileoffice.constant.GlobalConstant;
@@ -28,10 +29,12 @@ public class LoginServiceImpl implements LoginService {
 
     @Override
     public Response<SysAdmin> sys(String username, String password) {
-        QueryWrapper<SysAdmin> wrapper = new QueryWrapper<SysAdmin>()
-                .eq("username", username)
-                .eq("pwd", password);
+        LambdaQueryWrapper<SysAdmin> wrapper = new QueryWrapper<SysAdmin>()
+                .lambda()
+                .eq(SysAdmin::getUsername, username)
+                .eq(SysAdmin::getPwd, password);
         SysAdmin sysAdmin = sysAdminMapper.selectOne(wrapper);
+        System.out.println(sysAdmin);
         try {
             GlobalConstant.loginError.notNull(sysAdmin);
             return Response.success(sysAdmin);

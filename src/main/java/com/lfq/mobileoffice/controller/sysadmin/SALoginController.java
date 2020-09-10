@@ -29,7 +29,10 @@ public class SALoginController {
      * 访问登陆页面
      */
     @GetMapping("/sys/login")
-    @ViewModelParameter(key = "action", value = "系统管理员")
+    @ViewModelParameters({
+            @ViewModelParameter(key = "action", value = "/sys/login"),
+            @ViewModelParameter(key = "role", value = "系统管理员")
+    })
     public String login(Model model) {
         return "/login";
     }
@@ -46,7 +49,7 @@ public class SALoginController {
         Response<SysAdmin> response = loginService.sys(username, pwd);
         if (response.isSuccess()) {
             session.setAttribute("sysadmin", response.getData());
-            return "redirect:/sys/home";
+            return "redirect:/sys";
         } else {
             login(model);
             model.addAttribute("error", response.getMessage());
@@ -70,8 +73,8 @@ public class SALoginController {
      */
     @GetMapping(value = "/sys/notloggedin", produces = "text/html")
     @ViewModelParameters({
-            @ViewModelParameter(key = "action", value = "/admin/login"),
-            @ViewModelParameter(key = "action", value = "系统管理员")
+            @ViewModelParameter(key = "action", value = "/sys/login"),
+            @ViewModelParameter(key = "role", value = "系统管理员")
     })
     public String notLogin(Model model) {
         model.addAttribute("error", GlobalConstant.noAccess.getMessage());

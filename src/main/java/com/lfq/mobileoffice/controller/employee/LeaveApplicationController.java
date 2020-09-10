@@ -46,7 +46,7 @@ public class LeaveApplicationController {
     @ResponseBody
     @UseDefaultSuccessResponse
     public void post(@SessionAttribute("employee") Employee employee,
-                     @RequestParam("resource") String[] resources,
+                     @RequestParam(value = "resource", required = false) String[] resources,
                      Integer type, String des, Long start, Long end) {
         WRFL wrfl = WRFL.builder()
                 .type(type)

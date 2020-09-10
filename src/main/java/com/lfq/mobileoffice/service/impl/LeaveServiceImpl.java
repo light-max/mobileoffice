@@ -55,7 +55,6 @@ public class LeaveServiceImpl extends ServiceImpl<WRFLMapper, WRFL> implements L
         // 检查资源是否存在
         if (resources != null) {
             for (String resource : resources) {
-                System.out.println("a:" + resource);
                 GlobalConstant.resourceNotExists.notNull(
                         resourceMapper.selectById(resource)
                 );
@@ -128,6 +127,9 @@ public class LeaveServiceImpl extends ServiceImpl<WRFLMapper, WRFL> implements L
                 .stream()
                 .map(WRFLFile::getResourceId)
                 .collect(Collectors.toList());
+        if (resourceIds.isEmpty()) {
+            return null;
+        }
         return resourceMapper.selectBatchIds(resourceIds);
     }
 
@@ -136,6 +138,7 @@ public class LeaveServiceImpl extends ServiceImpl<WRFLMapper, WRFL> implements L
         LambdaUpdateWrapper<WRFL> wrapper = new UpdateWrapper<WRFL>()
                 .lambda()
                 .eq(WRFL::getId, wrflId)
+                .eq(WRFL::getId, 1)
                 .set(WRFL::getStatus, 2);
         update(wrapper);
     }
@@ -145,6 +148,7 @@ public class LeaveServiceImpl extends ServiceImpl<WRFLMapper, WRFL> implements L
         LambdaUpdateWrapper<WRFL> wrapper = new UpdateWrapper<WRFL>()
                 .lambda()
                 .eq(WRFL::getId, wrflId)
+                .eq(WRFL::getId, 1)
                 .set(WRFL::getStatus, 3);
         update(wrapper);
     }
