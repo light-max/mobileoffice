@@ -1,0 +1,402 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <title>企业管理系统</title>
+
+    <link rel="stylesheet" href="/webjars/bootstrap/4.5.0/css/bootstrap.css">
+    <link rel="stylesheet" href="/css/admin.css">
+
+    <script src="/webjars/jquery/3.5.1/jquery.js"></script>
+    <script src="/webjars/bootstrap/4.5.0/js/bootstrap.js"></script>
+
+    <script>
+        function select(obj) {
+            switch (obj.value) {
+                case 0:
+                case "0":
+                    window.location.href = "/admin/reimbursement/review";
+                    break
+                case 1:
+                case "1":
+                    window.location.href = "/admin/reimbursement/review?status=1";
+                    break
+            }
+        }
+
+        // 显示这个报销申请的附件
+        function fileDialog(id) {
+            var setting = {
+                url: "/reimbursement/file/" + id,
+                method: "GET",
+                dataType: "JSON",
+                timeout: 0
+            };
+            $.ajax(setting).done(function (response) {
+                if (response.success) {
+                    $("#files").modal("toggle");
+                    var body = $("#f-tbody");
+                    body.html("");
+                    response.data.forEach(r => {
+                        body.append(`<tr>
+<th>${r.id}</th>
+<td>${r.type}</td>
+<td>${r.name}</td>
+<td>${r.size}</td>
+<td><a href="/resource/${r.id}" target="_blank">查看</a> </td>
+</tr>`);
+                    });
+                } else {
+                    alert(response.message);
+                }
+            })
+        }
+
+        // 显示这个报销申请的账单列表
+        function billsDialog(id) {
+            var setting = {
+                url: "/reimbursement/bills/" + id,
+                method: "GET",
+                dataType: "JSON",
+                timeout: 0
+            };
+            $.ajax(setting).done(function (response) {
+                if (response.success) {
+                    $("#bills").modal("toggle");
+                    var body = $("#b-tbody");
+                    body.html("");
+                    response.data.forEach(r => {
+                        body.append(`<tr>
+<th>${r.id}</th>
+<td class="text-center">${r.name}</td>
+<td class="text-center">${r.amount}</td>
+</tr>`);
+                    });
+                } else {
+                    alert(response.message);
+                }
+            })
+        }
+
+        // 展示被折叠的文本
+        function showText(obj) {
+            alert($(obj).html())
+        }
+
+        // 根据员工id获取部门名称
+        async function getDepartmentName(departmentId) {
+            var name = "未分配";
+            var setting = {
+                "url": "/department/" + departmentId,
+                "method": "GET",
+                "timeout": 0,
+                "dataType": "JSON"
+            };
+
+            await $.ajax(setting).done(async function (response) {
+                if (response.success) {
+                    name = response.data.name;
+                }
+            });
+
+            return name;
+        }
+
+        // 显示请假人|员工信息对话框
+        function showEmployee(employeeId) {
+            var settings = {
+                "url": "/employee/" + employeeId,
+                "method": "GET",
+                "timeout": 0,
+                "dataType": "JSON"
+            };
+
+            $.ajax(settings).done(async function (response) {
+                if (response.success) {
+                    var data = response.data;
+                    console.log(data);
+                    $('#employee').modal('toggle');
+                    $('#e-id').val(data.id);
+                    $('#e-sex').val(data.sex.replace("male", "男").replace("female", "女"));
+                    $('#e-address').val(data.address);
+                    $('#e-contact').val(data.contact);
+                    $('#e-idNumber').val(data.idNumber);
+                    $('#e-department').val(await getDepartmentName(data.department));
+                }
+            });
+        }
+
+        // 同意申请
+        function approve(id) {
+            var settings = {
+                "url": "/admin/reimbursement/review/approve/" + id,
+                "method": "POST",
+                "timeout": 0,
+                "dataType": "json"
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.success) {
+                    window.location.reload();
+                } else {
+                    alert(response.message);
+                }
+            });
+        }
+
+        // 拒绝申请
+        function refuse(id) {
+            if (confirm("你确定要拒绝这条申请?")) {
+                var settings = {
+                    "url": "/admin/reimbursement/review/refuse/" + id,
+                    "method": "POST",
+                    "timeout": 0,
+                    "dataType": "json"
+                };
+
+                $.ajax(settings).done(function (response) {
+                    if (response.success) {
+                        window.location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                });
+            }
+        }
+
+        // 同意所以申请
+        function approveAll() {
+            if (confirm("你确定要同意所有报销申请吗?")) {
+                var settings = {
+                    "url": "/admin/reimbursement/review/approveall",
+                    "method": "POST",
+                    "timeout": 0,
+                    "dataType": "JSON"
+                };
+
+                $.ajax(settings).done(function (response) {
+                    if (response.success) {
+                        window.location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                });
+            }
+        }
+
+        // 拒绝所有申请
+        function refuseAll() {
+            if (confirm("你确定要拒绝所有报销申请吗?")) {
+                var settings = {
+                    "url": "/admin/reimbursement/review/refuseall",
+                    "method": "POST",
+                    "timeout": 0,
+                    "dataType": "JSON"
+                };
+
+                $.ajax(settings).done(function (response) {
+                    if (response.success) {
+                        window.location.reload();
+                    } else {
+                        alert(response.message);
+                    }
+                });
+            }
+        }
+
+    </script>
+    <style>
+        td {
+            max-width: 350px;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="common/admin::navbar"></div>
+<div class="container-fluid">
+    <div class="row">
+        <div th:replace="common/admin::sidebarMenu"></div>
+
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">报销申请列表</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <select class="custom-select col" onchange="select(this)">
+                        <option value="1">待批准的报销</option>
+                        <option value="0">所有报销</option>
+                    </select>
+                    &nbsp;&nbsp;
+                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                            onclick="approveAll()">同意所有
+                    </button>
+                    &nbsp;&nbsp;
+                    <button type="button" class="btn btn-sm btn-outline-secondary"
+                            onclick="refuseAll()">拒绝所有
+                    </button>
+                </div>
+            </div>
+            <h2 th:if="${list.isEmpty()}" class="text-center">当前还没有要处理的预约</h2>
+            <table th:if="${!list.isEmpty()}" class="table table-striped table-hover">
+                <thead class="thead-dark">
+                <tr>
+                    <th style="width: 50px">ID</th>
+                    <th class="text-center" style="width: 100px">申请人</th>
+                    <th style="width: 200px">收款人姓名</th>
+                    <th style="width: 200px">收款账号</th>
+                    <th style="width: 1fr">备注</th>
+                    <th class="text-center" style="width: 100px">状态</th>
+                    <th style="width: 80px">账单</th>
+                    <th style="width: 80px">附件</th>
+                    <th class="text-center" style="width: 200px">申请时间</th>
+                    <th class="text-center" style="width: 120px">操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="l:${list}">
+                    <th th:text="${l.id}"></th>
+                    <td class="text-center">
+                        <a href="#" class="btn-link" th:text="${employeeMap.get(l.employeeId).getName()}"
+                           th:onclick="'showEmployee('+${l.employeeId}+')'"></a>
+                    </td>
+                    <td style="cursor: pointer" class="text-truncate" th:text="${l.payeeName}"
+                        onclick="showText(this)"></td>
+                    <td style="cursor: pointer" class="text-truncate" th:text="${l.bankCard}"
+                        onclick="showText(this)"></td>
+                    <td style="cursor: pointer" class="text-truncate" th:text="${l.des}"
+                        onclick="showText(this)"></td>
+                    <th class="text-center" th:utext="${l.getStatusText()}"></th>
+                    <td>
+                        <a href="#" class="btn-link" th:onclick="'billsDialog('+${l.id}+')'">查看</a>
+                    </td>
+                    <td>
+                        <a href="#" class="btn-link" th:onclick="'fileDialog('+${l.id}+')'">查看</a>
+                    </td>
+                    <td class="text-center" th:text="${l.translateDate()}"></td>
+                    <td class="text-center">
+                        <span th:if="${l.status==1}">
+                            <a href="#" class="btn-link text-primary" th:onclick="'approve('+${l.id}+')'">同意</a>
+                            <a href="#" class="btn-link text-danger" th:onclick="'refuse('+${l.id}+')'">拒绝</a>
+                        </span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <hr>
+            <div th:replace="common/admin::page"></div>
+            <br>
+            <br>
+            <br>
+        </main>
+    </div>
+</div>
+
+<!--文件列表对话框-->
+<div class="modal fade" id="files" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">文件列表</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>类型</th>
+                        <th>名称</th>
+                        <th>大小</th>
+                        <th>操作</th>
+                    </tr>
+                    </thead>
+                    <tbody id="f-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--账单列表对话框-->
+<div class="modal fade" id="bills" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">账单列表</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <thead class="table-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th class="text-center">名称</th>
+                        <th class="text-center">金额(元)</th>
+                    </tr>
+                    </thead>
+                    <tbody id="b-tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--员工详情对话框-->
+<div class="modal fade" id="employee" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">员工信息</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="e-id">ID</label>
+                    <input readonly type="number" class="form-control" id="e-id">
+                </div>
+                <div class="form-group">
+                    <label for="e-idNumber">员工身份证号码</label>
+                    <input readonly type="text" class="form-control" id="e-idNumber">
+                </div>
+                <div class="form-group">
+                    <label for="e-sex">性别</label>
+                    <input readonly type="text" class="form-control" id="e-sex">
+                </div>
+                <div class="form-group">
+                    <label for="e-address">现居住地</label>
+                    <input readonly type="text" class="form-control" id="e-address">
+                </div>
+                <div class="form-group">
+                    <label for="e-contact">联系方式</label>
+                    <input readonly type="text" class="form-control" id="e-contact">
+                </div>
+                <div class="form-group">
+                    <label for="e-department">部门</label>
+                    <input readonly type="text" class="form-control" id="e-department">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+<script type="text/javascript" th:inline="javascript">
+    $().ready(function () {
+        var single = [[${status}]];
+        if (single) {
+            $("option[value= " + single + "]").prop("selected", true);
+        } else {
+            $("option[value=0]").prop("selected", true);
+        }
+    });
+</script>
+</html>

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.lfq.mobileoffice.constant.AssertException;
 import com.lfq.mobileoffice.model.entity.Department;
 import com.lfq.mobileoffice.model.entity.Employee;
+import org.springframework.lang.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ public interface EmployeeService extends IService<Employee> {
      * @param department  部门id
      * @return
      */
-    Page<Employee> listPage(Integer currentPage, Integer department);
+    Page<Employee> listPage(@Nullable Integer currentPage,@Nullable Integer department);
 
     /**
      * 添加员工

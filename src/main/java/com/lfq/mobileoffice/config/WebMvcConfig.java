@@ -33,6 +33,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/leave/application/**")// 员工请假请求
                 .addPathPatterns("/employee/resource")// 员工上传&删除文件请求
                 .addPathPatterns("/travel/application/**")// 员工出差申请
+                .addPathPatterns("/reimbursement/application/**")// 员工报销申请
         ;
     }
 

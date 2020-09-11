@@ -69,6 +69,13 @@ public enum GlobalConstant implements Assert {
     btTime("开始时间必须在结束时间之前"),
     btDesFormat("出差事由不能超过200个字符"),
     btAddress("出差地址不能超过200个字符"),
+
+    reimburDesFormat("报销详情不能超过200个字符"),
+    reimburPayeeNameFormat("收款人姓名必须在2~100个字符内"),
+    reimburBankCardFormat("收款银行卡号不能超过30个字符"),
+    reimburAmountFormat("报销金额不能超过999999.99元"),
+    reimburBillItemNameFormat("单条账单项目名必须在1~200个字符以内"),
+
     ;
 
     private String message;

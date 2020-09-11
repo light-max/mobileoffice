@@ -57,6 +57,12 @@
                     出差审核
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link font-weight-bold" th:classappend="${view=='reimbursement-review'?'active':''}"
+                   href="/admin/reimbursement/review?status=1">
+                    报销审核
+                </a>
+            </li>
         </ul>
     </div>
 </nav>

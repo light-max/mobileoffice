@@ -23,7 +23,7 @@ public interface TravelService extends IService<BusinessTrip> {
      * @param trip       出差申请表信息
      * @param resources  出差申请表附件
      */
-    void postTravel(Integer employeeId, BusinessTrip trip, String[] resources);
+    void postTravel(Integer employeeId, BusinessTrip trip, @Nullable String[] resources);
 
     /**
      * 分页查询出差申请
@@ -32,7 +32,7 @@ public interface TravelService extends IService<BusinessTrip> {
      * @param status      状态
      * @return
      */
-    Page<BusinessTrip> listPage(Integer currentPage, Integer status);
+    Page<BusinessTrip> listPage(@Nullable Integer currentPage, @Nullable Integer status);
 
     /**
      * 查询出差申请中所有出现的员工
