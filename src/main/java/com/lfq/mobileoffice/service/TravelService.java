@@ -35,6 +35,17 @@ public interface TravelService extends IService<BusinessTrip> {
     Page<BusinessTrip> listPage(@Nullable Integer currentPage, @Nullable Integer status);
 
     /**
+     * 按状态分页查询员工出差记录<br>
+     * <b>查询待审核的数据不做分页，直接返回所有</b>
+     *
+     * @param employeeId  员工id
+     * @param currentPage 当前页
+     * @param status      状态
+     * @return
+     */
+    Page<BusinessTrip> listPage(Integer employeeId, @Nullable Integer currentPage, @Nullable Integer status);
+
+    /**
      * 查询出差申请中所有出现的员工
      *
      * @param trips 保存了出差申请的集合

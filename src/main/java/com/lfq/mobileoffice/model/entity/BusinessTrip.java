@@ -1,6 +1,7 @@
 package com.lfq.mobileoffice.model.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lfq.mobileoffice.util.datetranslate.DateParameter;
 import com.lfq.mobileoffice.util.datetranslate.DateTranslate;
 import lombok.AllArgsConstructor;
@@ -60,6 +61,7 @@ public class BusinessTrip implements DateTranslate {
      *
      * @return {@link #start}与{@link #end}转换后拼接在一起的字符串
      */
+    @JsonIgnore
     public String getReservationTime() {
         SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm");
         String s = format.format(new Date(start));
@@ -70,6 +72,7 @@ public class BusinessTrip implements DateTranslate {
     /**
      * 把{@link #status}转换为文本, 供前端调用
      */
+    @JsonIgnore
     public String getStatusText() {
         return new HashMap<Integer, String>() {{
             put(1, "<span class=\"text-primary\">待批准</span>");

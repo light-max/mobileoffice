@@ -40,6 +40,17 @@ public interface ReimbursementService extends IService<Reimbursement> {
     Page<Reimbursement> listPage(@Nullable Integer currentPage, @Nullable Integer status);
 
     /**
+     * 按状态分页查询员工报销记录<br>
+     * <b>如果查询的状态是待审核状态，则查询所有</b>
+     *
+     * @param employeeId  员工id
+     * @param currentPage 当前页
+     * @param status      状态
+     * @return
+     */
+    Page<Reimbursement> listPage(Integer employeeId, @Nullable Integer currentPage, @Nullable Integer status);
+
+    /**
      * 查询报销记录申请中所有的员工信息
      *
      * @param reimbursements 包含了员工信息的报销记录

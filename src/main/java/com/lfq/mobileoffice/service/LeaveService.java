@@ -28,7 +28,7 @@ public interface LeaveService extends IService<WRFL> {
      *                   <li>{@link WRFL#getEnd()}</li></ul>
      * @param resources  请假所带附件的资源id
      */
-    void postLeaveRequest(Integer employeeId, WRFL wrfl,@Nullable String[] resources);
+    void postLeaveRequest(Integer employeeId, WRFL wrfl, @Nullable String[] resources);
 
     /**
      * 按状态分页查询所有请假记录
@@ -38,6 +38,17 @@ public interface LeaveService extends IService<WRFL> {
      * @return
      */
     Page<WRFL> listPage(@Nullable Integer currentPage, @Nullable Integer status);
+
+    /**
+     * 按状态分页查询某个员工的请假记录<br>
+     * <b>如果查询申请中的请假，返回所有，不做分页</b>
+     *
+     * @param employeeId  员工id
+     * @param currentPage 当前页
+     * @param status      状态
+     * @return
+     */
+    Page<WRFL> listPage(Integer employeeId, @Nullable Integer currentPage, @Nullable Integer status);
 
     /**
      * 查询请假申请中所有出现的员工

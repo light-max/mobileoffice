@@ -81,28 +81,40 @@ public class ReimbursementReviewController {
         return Response.success(service.getBills(reimbursementId));
     }
 
-    @PostMapping("//admin/reimbursement/review/approve/{reimbursementId}")
+    /**
+     * 同意一条报销记录
+     */
+    @PostMapping("/admin/reimbursement/review/approve/{reimbursementId}")
     @ResponseBody
     @UseDefaultSuccessResponse
     public void approve(@PathVariable Long reimbursementId) {
         service.approve(reimbursementId);
     }
 
-    @PostMapping("//admin/reimbursement/review/refuse/{reimbursementId}")
+    /**
+     * 拒绝一条报销记录
+     */
+    @PostMapping("/admin/reimbursement/review/refuse/{reimbursementId}")
     @ResponseBody
     @UseDefaultSuccessResponse
     public void refuse(@PathVariable Long reimbursementId) {
         service.refuse(reimbursementId);
     }
 
-    @PostMapping("//admin/reimbursement/review/approveall")
+    /**
+     * 同意所有报销记录
+     */
+    @PostMapping("/admin/reimbursement/review/approveall")
     @ResponseBody
     @UseDefaultSuccessResponse
     public void approveAll() {
         service.approveAll();
     }
 
-    @PostMapping("//admin/reimbursement/review/refuseall")
+    /**
+     * 拒绝所有报销记录
+     */
+    @PostMapping("/admin/reimbursement/review/refuseall")
     @ResponseBody
     @UseDefaultSuccessResponse
     public void refuseAll() {

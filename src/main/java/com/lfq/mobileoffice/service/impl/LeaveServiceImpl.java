@@ -94,6 +94,22 @@ public class LeaveServiceImpl extends ServiceImpl<WRFLMapper, WRFL> implements L
     }
 
     @Override
+    public Page<WRFL> listPage(Integer employeeId, Integer currentPage, Integer status) {
+        LambdaQueryWrapper<WRFL> wrapper = new QueryWrapper<WRFL>()
+                .lambda()
+                .eq(WRFL::getEmployeeId, employeeId)
+                .orderByDesc(WRFL::getCreateTime);
+        if (status != null) {
+            // 查询申请中的请假，返回所有，不做分页
+            wrapper.eq(WRFL::getStatus, status);
+            if (status == 1) {
+                return page(new Page<>(1, Integer.MAX_VALUE), wrapper);
+            }
+        }
+        return page(new Page<>(currentPage == null ? 1 : currentPage, 15), wrapper);
+    }
+
+    @Override
     public Map<Integer, Employee> employeeMap(List<WRFL> wrfls) {
         Set<Integer> ids = wrfls.stream()
                 .map(WRFL::getEmployeeId)
@@ -138,7 +154,7 @@ public class LeaveServiceImpl extends ServiceImpl<WRFLMapper, WRFL> implements L
         LambdaUpdateWrapper<WRFL> wrapper = new UpdateWrapper<WRFL>()
                 .lambda()
                 .eq(WRFL::getId, wrflId)
-                .eq(WRFL::getId, 1)
+                .eq(WRFL::getStatus, 1)
                 .set(WRFL::getStatus, 2);
         update(wrapper);
     }
@@ -148,7 +164,7 @@ public class LeaveServiceImpl extends ServiceImpl<WRFLMapper, WRFL> implements L
         LambdaUpdateWrapper<WRFL> wrapper = new UpdateWrapper<WRFL>()
                 .lambda()
                 .eq(WRFL::getId, wrflId)
-                .eq(WRFL::getId, 1)
+                .eq(WRFL::getStatus, 1)
                 .set(WRFL::getStatus, 3);
         update(wrapper);
     }

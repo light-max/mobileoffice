@@ -88,6 +88,22 @@ public class TravelServiceImpl extends ServiceImpl<BusinessTripMapper, BusinessT
     }
 
     @Override
+    public Page<BusinessTrip> listPage(Integer employeeId, Integer currentPage, Integer status) {
+        LambdaQueryWrapper<BusinessTrip> wrapper = new QueryWrapper<BusinessTrip>()
+                .lambda()
+                .eq(BusinessTrip::getEmployeeId, employeeId)
+                .orderByDesc(BusinessTrip::getCreateTime);
+        if (status != null) {
+            wrapper.eq(BusinessTrip::getStatus, status);
+            // 查询所有
+            if (status == 1) {
+                return page(new Page<>(1, Integer.MAX_VALUE), wrapper);
+            }
+        }
+        return page(new Page<>(currentPage == null ? 1 : currentPage, 15), wrapper);
+    }
+
+    @Override
     public Map<Integer, Employee> employeeMap(List<BusinessTrip> trips) {
         Set<Integer> ids = trips.stream()
                 .map(BusinessTrip::getEmployeeId)

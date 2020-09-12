@@ -103,6 +103,22 @@ public class ReimbursementServiceImpl extends ServiceImpl<ReimbursementMapper, R
     }
 
     @Override
+    public Page<Reimbursement> listPage(Integer employeeId, Integer currentPage, Integer status) {
+        LambdaQueryWrapper<Reimbursement> wrapper = new QueryWrapper<Reimbursement>()
+                .lambda()
+                .orderByDesc(Reimbursement::getCreateTime)
+                .eq(Reimbursement::getEmployeeId, employeeId);
+        if (status != null) {
+            wrapper.eq(Reimbursement::getStatus, status);
+            // 查询所有
+            if (status == 1) {
+                return page(new Page<>(1, Integer.MAX_VALUE), wrapper);
+            }
+        }
+        return page(new Page<>(currentPage == null ? 1 : currentPage, 15), wrapper);
+    }
+
+    @Override
     public Map<Integer, Employee> employeeMap(List<Reimbursement> reimbursements) {
         Set<Integer> ids = reimbursements.stream()
                 .map(Reimbursement::getEmployeeId)
