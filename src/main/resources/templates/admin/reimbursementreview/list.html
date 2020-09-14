@@ -65,13 +65,16 @@
                     $("#bills").modal("toggle");
                     var body = $("#b-tbody");
                     body.html("");
+                    var total = 0;
                     response.data.forEach(r => {
                         body.append(`<tr>
 <th>${r.id}</th>
 <td class="text-center">${r.name}</td>
 <td class="text-center">${r.amount}</td>
 </tr>`);
+                        total += r.amount;
                     });
+                    body.append(`<tr><th>总额：${total}元</th><td></td><td></td></tr>`);
                 } else {
                     alert(response.message);
                 }
