@@ -99,7 +99,7 @@ public class ReimbursementServiceImpl extends ServiceImpl<ReimbursementMapper, R
         if (status != null) {
             wrapper.eq(Reimbursement::getStatus, status);
         }
-        return page(new Page<>(currentPage == null ? 1 : currentPage, 15), wrapper);
+        return page(new Page<>(currentPage == null ? 1 : currentPage, 10), wrapper);
     }
 
     @Override

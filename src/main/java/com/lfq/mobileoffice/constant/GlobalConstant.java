@@ -37,7 +37,7 @@ public enum GlobalConstant implements Assert {
     departmentEmployeeBind("部门下还有员工，不能删除"),
 
     employeeNotExist("员工不存在"),
-    employeeNameFormat("员工姓名必须在2~100个字以内"),
+    employeeNameFormat("员工姓名必须在1~100个字以内"),
     employeeAddressFormat("员工现居住地不能超过300个字符"),
     employeeContactFormat("员工联系方式不能超过20个字符"),
     employeePwdFormat("密码必须在1~16位，只能使用字母和数字"),

@@ -57,21 +57,37 @@ public class RoomApplyServiceImpl extends ServiceImpl<RoomApplyMapper, RoomApply
         for (RoomApply apply : list(wrapper)) {
             // 检查时间段是否重复
             // 开始时间在已有记录的之间
-            if (start >= apply.getStart() && start <= apply.getEnd()) {
+            if (start > apply.getStart() && start < apply.getEnd()) {
                 GlobalConstant.roomApplyDuplicateTimePeriod.newException();
             }
             // 结束时间在已有记录之间
-            if (end >= apply.getEnd() && end <= apply.getEnd()) {
+            if (end > apply.getEnd() && end < apply.getEnd()) {
                 GlobalConstant.roomApplyDuplicateTimePeriod.newException();
             }
             // 已有记录的开始时间在现在的时间之间
-            if (apply.getStart() >= start && apply.getStart() <= end) {
+            if (apply.getStart() > start && apply.getStart() < end) {
                 GlobalConstant.roomApplyDuplicateTimePeriod.newException();
             }
             // 已有记录的结束时间在现在的时间之间
-            if (apply.getEnd() >= start && apply.getEnd() <= end) {
+            if (apply.getEnd() > start && apply.getEnd() < end) {
                 GlobalConstant.roomApplyDuplicateTimePeriod.newException();
             }
+
+//            if (start >= apply.getStart() && start <= apply.getEnd()) {
+//                GlobalConstant.roomApplyDuplicateTimePeriod.newException();
+//            }
+//            // 结束时间在已有记录之间
+//            if (end >= apply.getEnd() && end <= apply.getEnd()) {
+//                GlobalConstant.roomApplyDuplicateTimePeriod.newException();
+//            }
+//            // 已有记录的开始时间在现在的时间之间
+//            if (apply.getStart() >= start && apply.getStart() <= end) {
+//                GlobalConstant.roomApplyDuplicateTimePeriod.newException();
+//            }
+//            // 已有记录的结束时间在现在的时间之间
+//            if (apply.getEnd() >= start && apply.getEnd() <= end) {
+//                GlobalConstant.roomApplyDuplicateTimePeriod.newException();
+//            }
         }
 
         // 插入数据
@@ -93,7 +109,7 @@ public class RoomApplyServiceImpl extends ServiceImpl<RoomApplyMapper, RoomApply
         if (status != null) {
             wrapper.eq(RoomApply::getStatus, status);
         }
-        return page(new Page<>(currentPage == null ? 1 : currentPage, 15), wrapper);
+        return page(new Page<>(currentPage == null ? 1 : currentPage, 10), wrapper);
     }
 
     @Override

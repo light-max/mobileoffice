@@ -40,9 +40,9 @@ public class DepartmentController {
     @GetMapping({"/admin/department/list", "/admin/department", "/admin/department/list/{currentPage}"})
     @ViewModelParameter(key = "view", value = "department")
     public String list(Model model, @PathVariable(required = false) Integer currentPage) {
-        Page<Department> page = departmentService.page(new Page<>(currentPage == null ? 1 : currentPage, 15));
+        Page<Department> page = departmentService.page(new Page<>(currentPage == null ? 1 : currentPage, 10));
         List<Department> departments = page.getRecords();
-        Pager pager = new Pager(page, "/admin/notice/list/");
+        Pager pager = new Pager(page, "/admin/department/list/");
         model.addAttribute("pager", pager);
         model.addAttribute("departments", departments);
         return "/admin/department/list";
@@ -96,9 +96,4 @@ public class DepartmentController {
         departmentService.removeById(departmentId);
     }
 
-    @GetMapping("test")
-    @ResponseBody
-    public Response<List<Department>> test() {
-        return Response.success(departmentService.list());
-    }
 }

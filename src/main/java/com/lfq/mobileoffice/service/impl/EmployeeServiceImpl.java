@@ -33,9 +33,9 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     public Page<Employee> listPage(Integer currentPage, Integer department) {
         Page<Employee> page;
         if (department == null) {
-            page = page(new Page<>(currentPage == null ? 1 : currentPage, 15));
+            page = page(new Page<>(currentPage == null ? 1 : currentPage, 10));
         } else {
-            page = page(new Page<>(currentPage == null ? 1 : currentPage, 15),
+            page = page(new Page<>(currentPage == null ? 1 : currentPage, 10),
                     new QueryWrapper<Employee>().eq("department", department)
             );
         }
@@ -45,7 +45,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
     @Override
     public void addEmployee(Employee employee) throws AssertException {
         GlobalConstant.employeeNameFormat.isTrue(
-                employee.getName().matches(".{2,100}")
+                employee.getName().matches(".{1,100}")
         );
         GlobalConstant.employeeAddressFormat.isTrue(
                 employee.getAddress().length() < 300
@@ -66,7 +66,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
                 .department(employee.getDepartment())
                 .sex(sex)
                 .build();
-        if (employee.getDepartment() != 0) {
+        if (employee.getDepartment() != null && employee.getDepartment() != 0) {
             GlobalConstant.departmentNotExists.notNull(
                     departmentMapper.selectById(employee.getDepartment())
             );
@@ -74,7 +74,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
         }
         baseMapper.insert(build);
         // 现在的部门人数+1
-        if (build.getDepartment() != 0) {
+        if (build.getDepartment() != null && build.getDepartment() != 0) {
             departmentMapper.updateAddCount(build.getDepartment());
         }
     }
@@ -108,7 +108,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
                 .sex(sex)
                 .department(employee.getDepartment())
                 .build();
-        if (employee.getDepartment() != 0) {
+        if (employee.getDepartment() != null && employee.getDepartment() != 0) {
             GlobalConstant.departmentNotExists.notNull(
                     departmentMapper.selectById(employee.getDepartment())
             );
@@ -120,7 +120,7 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
             departmentMapper.updateLessCount(source.getDepartment());
         }
         // 现在的部门人数+1
-        if (build.getDepartment() != 0) {
+        if (build.getDepartment() != null && build.getDepartment() != 0) {
             departmentMapper.updateAddCount(build.getDepartment());
         }
     }

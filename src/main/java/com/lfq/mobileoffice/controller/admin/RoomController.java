@@ -36,7 +36,7 @@ public class RoomController {
             produces = "text/html")
     @ViewModelParameter(key = "view", value = "room")
     public String list(Model model, @PathVariable(required = false) Integer currentPage) {
-        Page<Room> page = roomService.page(new Page<>(currentPage == null ? 1 : currentPage, 15));
+        Page<Room> page = roomService.page(new Page<>(currentPage == null ? 1 : currentPage, 10));
         List<Room> rooms = page.getRecords();
         Pager pager = new Pager(page, "/admin/room/list/");
         model.addAttribute("pager", pager);
@@ -45,14 +45,24 @@ public class RoomController {
     }
 
     /**
-     * 分页查询会议室
+     * 分页查询会议室可以附带查询条件
      *
      * @param currentPage 指定查询的页码，不指定时查询第一页
+     * @param name        按名称模糊查询
+     * @param capacity    可容纳人数
+     * @param start       时间段
+     * @param end         时间段
      */
     @GetMapping({"/room/list", "/room/list/{currentPage}"})
     @ResponseBody
-    public Response<PagerData> list(@PathVariable(required = false) Integer currentPage) {
-        Page<Room> page = roomService.page(new Page<>(currentPage == null ? 1 : currentPage, 15));
+    public Response<PagerData> list(
+            @PathVariable(required = false) Integer currentPage,
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Integer capacity,
+            @RequestParam(required = false) Long start,
+            @RequestParam(required = false) Long end
+    ) {
+        Page<Room> page = roomService.query(currentPage, name, capacity, start, end);
         List<Room> rooms = page.getRecords();
         Pager pager = new Pager(page, "/room/list/");
         return Response.pager(pager, rooms);

@@ -84,7 +84,7 @@ public class TravelServiceImpl extends ServiceImpl<BusinessTripMapper, BusinessT
         if (status != null) {
             wrapper.eq(BusinessTrip::getStatus, status);
         }
-        return page(new Page<>(currentPage == null ? 1 : currentPage, 15), wrapper);
+        return page(new Page<>(currentPage == null ? 1 : currentPage, 10), wrapper);
     }
 
     @Override

@@ -69,4 +69,6 @@ public class ERoomApplyController {
     public void post(@SessionAttribute Employee employee, RoomApply roomApply) {
         roomApplyService.postApply(employee.getId(), roomApply);
     }
+
+
 }

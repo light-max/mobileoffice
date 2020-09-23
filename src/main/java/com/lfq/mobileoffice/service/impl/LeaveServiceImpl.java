@@ -90,7 +90,7 @@ public class LeaveServiceImpl extends ServiceImpl<WRFLMapper, WRFL> implements L
         if (status != null) {
             wrapper.eq(WRFL::getStatus, status);
         }
-        return page(new Page<>(currentPage == null ? 1 : currentPage, 15), wrapper);
+        return page(new Page<>(currentPage == null ? 1 : currentPage, 10), wrapper);
     }
 
     @Override

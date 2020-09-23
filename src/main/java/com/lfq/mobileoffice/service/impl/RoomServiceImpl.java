@@ -1,6 +1,8 @@
 package com.lfq.mobileoffice.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lfq.mobileoffice.constant.AssertException;
 import com.lfq.mobileoffice.constant.GlobalConstant;
@@ -62,5 +64,22 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
     public void deleteRoom(Integer roomId) {
         baseMapper.deleteById(roomId);
         equipmentMapper.delete(new QueryWrapper<Equipment>().eq("room_id", roomId));
+    }
+
+    @Override
+    public Page<Room> query(Integer currentPage, String name, Integer capacity, Long start, Long end) {
+        LambdaQueryWrapper<Room> wrapper = new QueryWrapper<Room>()
+                .lambda();
+        Page<Room> page = new Page<>(currentPage == null ? 1 : currentPage, 15);
+        if (name != null) {
+            wrapper.like(Room::getName, name);
+        }
+        if (capacity != null) {
+            wrapper.ge(Room::getCapacity, capacity);
+        }
+        if (start != null && end != null) {
+            return baseMapper.selectByTime(wrapper, page, start, end);
+        }
+        return page(page, wrapper);
     }
 }
