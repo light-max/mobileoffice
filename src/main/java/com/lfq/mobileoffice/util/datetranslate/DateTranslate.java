@@ -2,6 +2,9 @@ package com.lfq.mobileoffice.util.datetranslate;
 
 import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 日期格式化注解的接口
@@ -18,7 +21,12 @@ public interface DateTranslate {
      * @throws RuntimeException 如果没有找到这个类中有{@link DateParameter}注解的字段就会抛出异常
      */
     default String translateDate() {
-        Field[] fields = this.getClass().getDeclaredFields();
+        List<Field> fields = new ArrayList<>();
+        for (Class<?> aClass = getClass();
+             !aClass.equals(Object.class);
+             aClass = aClass.getSuperclass()) {
+            fields.addAll(Arrays.asList(aClass.getDeclaredFields()));
+        }
         for (Field field : fields) {
             DateParameter dateParameter = field.getAnnotation(DateParameter.class);
             if (dateParameter != null) {

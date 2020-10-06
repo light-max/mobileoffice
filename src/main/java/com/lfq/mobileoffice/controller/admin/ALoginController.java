@@ -41,7 +41,7 @@ public class ALoginController {
      * @param username 用户名
      * @param pwd      密码
      */
-    @PostMapping("/admin/login")
+    @PostMapping(value = "/admin/login", produces = "text/html")
     public String login(Model model, HttpSession session, String username, String pwd) {
         Response<Admin> response = loginService.admin(username, pwd);
         if (response.isSuccess()) {
@@ -54,6 +54,19 @@ public class ALoginController {
             model.addAttribute("error", response.getMessage());
             return "/login";
         }
+    }
+
+    /**
+     * @see #login(Model, HttpSession, String, String)
+     */
+    @PostMapping("/admin/login")
+    @ResponseBody
+    public Response<Admin> login(HttpSession session, String username, String pwd) {
+        Response<Admin> response = loginService.admin(username, pwd);
+        if (response.isSuccess()) {
+            session.setAttribute("admin", response.getData());
+        }
+        return response;
     }
 
     /**

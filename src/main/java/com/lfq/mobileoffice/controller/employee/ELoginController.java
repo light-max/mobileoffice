@@ -4,6 +4,7 @@ import com.lfq.mobileoffice.constant.GlobalConstant;
 import com.lfq.mobileoffice.model.data.Response;
 import com.lfq.mobileoffice.model.entity.Employee;
 import com.lfq.mobileoffice.service.LoginService;
+import com.lfq.mobileoffice.util.UseDefaultSuccessResponse;
 import com.lfq.mobileoffice.util.ump.ViewModelParameter;
 import com.lfq.mobileoffice.util.ump.ViewModelParameters;
 import org.springframework.stereotype.Controller;
@@ -37,6 +38,16 @@ public class ELoginController {
             session.setAttribute("employee", response.getData());
         }
         return response;
+    }
+
+    /**
+     * 退出登陆
+     */
+    @PostMapping("/employee/logout")
+    @ResponseBody
+    @UseDefaultSuccessResponse
+    public void logout(HttpSession session) {
+        session.removeAttribute("employee");
     }
 
     /**

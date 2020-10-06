@@ -71,7 +71,7 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
         LambdaQueryWrapper<Room> wrapper = new QueryWrapper<Room>()
                 .lambda();
         Page<Room> page = new Page<>(currentPage == null ? 1 : currentPage, 15);
-        if (name != null) {
+        if (name != null && !name.isEmpty()) {
             wrapper.like(Room::getName, name);
         }
         if (capacity != null) {

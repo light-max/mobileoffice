@@ -76,6 +76,16 @@ public enum GlobalConstant implements Assert {
     reimburAmountFormat("报销金额不能超过999999.99元"),
     reimburBillItemNameFormat("单条账单项目名必须在1~200个字符以内"),
 
+    signinTimeNotExists("这个部门还没有设置签到时间"),
+    signinTimeNotSelectTime("请选择签到时间"),
+    signinTimeBefore("上班签到必须在下班签到之前"),
+
+    signinEmployeeNoDepartment("员工还没有分配部门，无法签到"),
+    signinDepartmentNotSigninTime("员工所在部门还未设置签到规则，无法签到"),
+    signinTypeError("签到类型错误，请上报维护人员"),
+    signinTypeError1("今天上班已经签过到，不可重复签到"),
+    signinTypeError2("今天下班已经签过到，不可重复签到"),
+    signinTypeError3("下班签到之前还未进行上班签到"),
     ;
 
     private String message;

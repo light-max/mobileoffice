@@ -104,6 +104,79 @@
                 });
             }
         }
+
+        // 签到设置对话框
+        function signInDialog(id) {
+            var settings = {
+                "url": "/signintime/current?department=" + id,
+                "method": "GET",
+                "dataType": "json"
+            }
+
+            $.ajax(settings).done(function (response) {
+                $("#signIn").modal("toggle");
+                if (response.success) {
+                    $("#s-current").val("上班时间：" + response.data.start + ", 下班时间：" + response.data.end);
+                } else {
+                    $("#s-current").val("没有设置");
+                }
+            });
+
+            $("#s-departmentId").val(id);
+        }
+
+        // 更新签到时间
+        function updateSignIn() {
+            var form = new FormData();
+            form.append("department", $("#s-departmentId").val());
+            form.append("before", $("#s-before").val());
+            form.append("after", $("#s-after").val());
+
+            var settings = {
+                "url": "/admin/signintime",
+                "method": "PUT",
+                "timeout": 0,
+                "processData": false,
+                "mimeType": "multipart/form-data",
+                "contentType": false,
+                "data": form,
+                "dataType": "json"
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.success) {
+                    window.location.reload();
+                } else {
+                    alert(response.message);
+                }
+            });
+        }
+
+        // 查看所有签到设置记录
+        function allSignInDialog() {
+            var settings = {
+                "url": "/signintime/all?department=" + $("#s-departmentId").val(),
+                "method": "GET",
+                "dataType": "json"
+            };
+
+            $.ajax(settings).done(function (response) {
+                if (response.data.length === 0) {
+                    alert("没有历史记录");
+                } else {
+                    $("#allSignIn").modal("toggle");
+                    $("#a-tb").html("");
+                    response.data.forEach(function (o) {
+                        $("#a-tb").append(`<tr>
+<td>${o.id}</td>
+<td>${o.start}</td>
+<td>${o.end}</td>
+<td>${new Date(o.createTime).toLocaleString()}</td>
+</tr>`);
+                    });
+                }
+            });
+        }
     </script>
 </head>
 <body>
@@ -130,7 +203,7 @@
                     <th>部门描述</th>
                     <th class="text-center">部门人数</th>
                     <th class="text-center">创建时间</th>
-                    <th class="text-center">操作</th>
+                    <th style="width: 200px;" class="text-center">操作</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -145,6 +218,7 @@
                     <td class="text-center">
                         <a href="#" class="btn-link text-danger" th:onclick="'deleteDepartment('+${d.id}+')'">删除</a>
                         <a href="#" class="btn-link" th:onclick="'updateDialog('+${d.id}+')'">编辑</a>
+                        <a href="#" class="btn-link" th:onclick="'signInDialog('+${d.id}+')'">签到设置</a>
                     </td>
                 </tr>
                 </tbody>
@@ -196,6 +270,72 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
                 <button type="button" class="btn btn-primary" onclick="updateDepartment()">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="signIn" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">设置签到时间</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <b>当前设置</b>
+                <input style="margin-top: 8px" class="form-control" type="text" id="s-current" readonly>
+                <hr>
+                <b>新的设置</b>
+                <input hidden id="s-departmentId">
+                <div class="text-sm-center text-danger">上班签到，员工需要在这个时间之前签到</div>
+                <div class="form-group" style="display: grid;grid-template-columns: auto 1fr auto;align-items: end">
+                    <label for="s-before">开始时间：</label>
+                    <input class="form-control" type="time" id="s-before" value="08:00">
+                </div>
+                <div class="text-sm-center text-danger">下班签到，员工需要在这个时间之后再签到</div>
+                <div class="form-group" style="display: grid;grid-template-columns: auto 1fr auto;align-items: end">
+                    <label for="s-after">结束时间：</label>
+                    <input class="form-control" type="time" id="s-after" value="17:00">
+                </div>
+                <div class="text-sm-right">
+                    <a href="#" class="btn-link" onclick="allSignInDialog()">查看历史设置</a>
+                </div>
+                <button type="button" class="btn btn-primary" onclick="updateSignIn()">保存</button>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="allSignIn" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">历史签到设置</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped table-hover">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>上班时间</th>
+                        <th>下班时间</th>
+                        <th>创建时间</th>
+                    </tr>
+                    </thead>
+                    <tbody id="a-tb"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">取消</button>
             </div>
         </div>
     </div>

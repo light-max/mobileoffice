@@ -23,7 +23,7 @@ public interface EmployeeService extends IService<Employee> {
      * @param department  部门id
      * @return
      */
-    Page<Employee> listPage(@Nullable Integer currentPage,@Nullable Integer department);
+    Page<Employee> listPage(@Nullable Integer currentPage, @Nullable Integer department);
 
     /**
      * 添加员工
@@ -64,4 +64,22 @@ public interface EmployeeService extends IService<Employee> {
      * @param pwd 新密码
      */
     void updatePwd(Integer id, String pwd);
+
+    /**
+     * 根据员工id修改员工现居住地
+     *
+     * @param id    员工id
+     * @param value 新的值
+     * @return 新的居住地
+     */
+    String updateAddress(Integer id, String value);
+
+    /**
+     * 根据id修改员工联系方式
+     *
+     * @param id    员工id
+     * @param value 新的值
+     * @return 新的联系方式
+     */
+    String updateContact(Integer id, String value);
 }

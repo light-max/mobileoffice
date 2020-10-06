@@ -1,6 +1,7 @@
 package com.lfq.mobileoffice.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.lfq.mobileoffice.constant.AssertException;
@@ -154,5 +155,29 @@ public class EmployeeServiceImpl extends ServiceImpl<EmployeeMapper, Employee> i
                 pwd.matches("^[A-Za-z0-9]{1,16}")
         );
         baseMapper.updatePwdById(id, pwd);
+    }
+
+    @Override
+    public String updateAddress(Integer id, String value) {
+        GlobalConstant.employeeAddressFormat.isTrue(
+                value.length() < 300
+        );
+        update(new UpdateWrapper<Employee>()
+                .lambda()
+                .set(Employee::getAddress, value)
+                .eq(Employee::getId, id));
+        return value;
+    }
+
+    @Override
+    public String updateContact(Integer id, String value) {
+        GlobalConstant.employeeContactFormat.isTrue(
+                value.length() < 20
+        );
+        update(new UpdateWrapper<Employee>()
+                .lambda()
+                .set(Employee::getContact, value)
+                .eq(Employee::getId, id));
+        return value;
     }
 }
