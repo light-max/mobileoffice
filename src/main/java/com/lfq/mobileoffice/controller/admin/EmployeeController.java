@@ -4,17 +4,26 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lfq.mobileoffice.constant.GlobalConstant;
 import com.lfq.mobileoffice.model.data.Pager;
 import com.lfq.mobileoffice.model.data.Response;
+import com.lfq.mobileoffice.model.entity.Admin;
 import com.lfq.mobileoffice.model.entity.Department;
 import com.lfq.mobileoffice.model.entity.Employee;
+import com.lfq.mobileoffice.model.entity.TmpEmployee;
 import com.lfq.mobileoffice.service.DepartmentService;
 import com.lfq.mobileoffice.service.EmployeeService;
 import com.lfq.mobileoffice.util.UseDefaultSuccessResponse;
 import com.lfq.mobileoffice.util.ump.ViewModelParameter;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -113,5 +122,71 @@ public class EmployeeController {
     @UseDefaultSuccessResponse
     public void resetPwd(@PathVariable Integer employeeId) {
         employeeService.updatePwd(employeeId, "1");
+    }
+
+    /**
+     * 员工模板excel表, 不带部门
+     */
+    @GetMapping("/employee/batch/template")
+    @ResponseBody
+    public ResponseEntity<byte[]> template() throws Exception {
+        return getResponseEntity(employeeService.template(false));
+    }
+
+    /**
+     * 员工模板excel表, 附带所有部门
+     */
+    @GetMapping("/employee/batch/template/depatement")
+    @ResponseBody
+    public ResponseEntity<byte[]> templateDepartment() throws IOException {
+        return getResponseEntity(employeeService.template(true));
+    }
+
+    /**
+     * @see #template()
+     * @see #templateDepartment()
+     */
+    private ResponseEntity<byte[]> getResponseEntity(XSSFWorkbook workbook) throws IOException {
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        workbook.write(out);
+        byte[] bytes = out.toByteArray();
+        HttpHeaders headers = new HttpHeaders();
+        String mediaType = "application/octet-stream";
+        headers.add("Content-Disposition", "filename=template.xlsx");
+        return ResponseEntity.ok().headers(headers)
+                .contentLength(bytes.length)
+                .contentType(MediaType.parseMediaType(mediaType))
+                .body(bytes);
+    }
+
+    /**
+     * 提交批量导入员工的模板
+     *
+     * @param file 模板文件
+     */
+    @PostMapping("/admin/employee/batch/template")
+    @ResponseBody
+    @UseDefaultSuccessResponse
+    public void template(@SessionAttribute("admin") Admin admin, MultipartFile file) {
+        employeeService.importEmployee(admin.getId(), file);
+    }
+
+    /**
+     * 获取所有导入后待确认添加的员工
+     */
+    @GetMapping("/admin/employee/batch/tmp")
+    @ResponseBody
+    public Response<List<TmpEmployee>> employeeTmp(@SessionAttribute("admin") Admin admin) {
+        return Response.success(employeeService.employeeTmp(admin.getId()));
+    }
+
+    /**
+     * 确认导入所有导入后待确认添加的员工
+     */
+    @PostMapping("/admin/employee/batch/tmp")
+    @ResponseBody
+    @UseDefaultSuccessResponse
+    public void postEmployeeTmp(@SessionAttribute("admin") Admin admin) {
+        employeeService.postEmployeeTmp(admin.getId());
     }
 }

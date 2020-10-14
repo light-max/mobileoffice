@@ -86,6 +86,14 @@ public enum GlobalConstant implements Assert {
     signinTypeError1("今天上班已经签过到，不可重复签到"),
     signinTypeError2("今天下班已经签过到，不可重复签到"),
     signinTypeError3("下班签到之前还未进行上班签到"),
+
+    templateFileFormat("模板文件格式错误"),
+    templateIniRowNotExists("工作簿中没有找到配置行"),
+    templateIniDepartmentName("部门id与部门名称不匹配"),
+    templateIniDepartmentIdFormat("配置中的id格式错误"),
+    templateIniDepartmentNameFormat("配置中的部门名称格式错误"),
+    templateDepartmentNotExists("目标部门不存在"),
+    templateEmpty("这个模板是空的，请重新上传"),
     ;
 
     private String message;

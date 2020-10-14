@@ -137,6 +137,49 @@
                 window.location.href = split[0] + '?department=' + obj.value;
             }
         }
+
+        // 打开批量导入员工待确认模态框
+        function tmpListDialog() {
+            $("#tmpList").modal("toggle");
+            $("#tl-tb").html("");
+            var settings = {
+                "url": "/admin/employee/batch/tmp",
+                "method": "GET",
+                "dataType": "json"
+            };
+
+            $.ajax(settings).done(function (response) {
+                var list = response.data;
+                list.forEach(o => {
+                    $("#tl-tb").append(`<tr>
+<th>${o.id}</th>
+<td>${o.name}</td>
+<td>${o.idNumber}</td>
+<td>${o.address}</td>
+<td>${o.contact}</td>
+<th>${o.departmentId}</th>
+<td>${o.departmentName}</td>
+                    </tr>`);
+                })
+            });
+        }
+
+        // 确认导入待确导入的员工
+        function tmpListPost() {
+            var settings = {
+                "url": "/admin/employee/batch/tmp",
+                "method": "POST",
+                "dataType": "json"
+            }
+
+            $.ajax(settings).done(function (response) {
+                if (response.success) {
+                    window.location.reload();
+                } else {
+                    alert(response.message);
+                }
+            });
+        }
     </script>
 </head>
 <body>
@@ -155,6 +198,10 @@
                         <option value="0">全部</option>
                         <option th:each="d:${departments}" th:text="${d.name}" th:value="${d.id}"></option>
                     </select>
+                    <button type="button" class="btn btn-sm btn-outline-secondary col" data-toggle="modal"
+                            data-target="#batch">批量导入
+                    </button>
+                    &nbsp;&nbsp;
                     <button type="button" class="btn btn-sm btn-outline-secondary col" data-toggle="modal"
                             data-target="#add">添加员工
                     </button>
@@ -177,7 +224,7 @@
                 </thead>
                 <tbody>
                 <tr th:each="e:${employees}">
-                    <td th:text="${e.id}"></td>
+                    <th th:text="${e.id}"></th>
                     <td th:text="${e.name}"></td>
                     <td th:text="${e.sex=='male'?'男':'女'}"></td>
                     <td th:text="${e.contact}"></td>
@@ -265,6 +312,65 @@
     </div>
 </div>
 
+<div class="modal fade" id="batch" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">批量导入员工</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <a href="/employee/batch/template" class="btn btn-link" target="_blank">下载模板</a>
+                <a href="/employee/batch/template/depatement" class="btn btn-link" target="_blank">下载带部门的模板</a>
+                <div style="margin-top: 20px;">
+                    <form action="/admin/employee/batch/template" method="post" name="bform">
+                        <input type="file" hidden id="b-file" name="file" accept=".xls,.xlsx">
+                    </form>
+                    <button type="button" class="btn btn-primary" onclick="$('#b-file').click()">选择模板文件并上传</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="tmpList" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">批量导入员工</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table table-striped table-hover">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>姓名</th>
+                        <th>身份证号码</th>
+                        <th>现居住地</th>
+                        <th>联系方式</th>
+                        <th>部门ID</th>
+                        <th>部门</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tl-tb"></tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="tmpListPost()">确认导入</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 <script type="text/javascript" th:inline="javascript">
     $().ready(function () {
@@ -273,3 +379,33 @@
     });
 </script>
 </html>
+<script>
+    // 选择文件后
+    $("#b-file").on("change", function () {
+        var form = new FormData();
+        var files = $(this).prop("files");
+        form.append("file", files[0]);
+
+        var settings = {
+            "url": "/admin/employee/batch/template",
+            "method": "POST",
+            "processData": false,
+            "mimeType": "multipart/form-data",
+            "contentType": false,
+            "data": form,
+            "dataType": "json"
+        };
+
+        $(this).val("");
+
+        $.ajax(settings).done(function (response) {
+            if (response.success) {
+                // 上传成功后打开新的模态框展示待确认的数据
+                $("#batch").modal("toggle");
+                tmpListDialog();
+            } else {
+                alert(response.message);
+            }
+        });
+    });
+</script>

@@ -5,7 +5,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.lfq.mobileoffice.constant.AssertException;
 import com.lfq.mobileoffice.model.entity.Department;
 import com.lfq.mobileoffice.model.entity.Employee;
+import com.lfq.mobileoffice.model.entity.TmpEmployee;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.lang.Nullable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -82,4 +85,35 @@ public interface EmployeeService extends IService<Employee> {
      * @return 新的联系方式
      */
     String updateContact(Integer id, String value);
+
+    /**
+     * 生成批量导入员工excel模板
+     *
+     * @param department 是否按部门生成
+     * @return xlsx格式的excel对象
+     */
+    XSSFWorkbook template(boolean department);
+
+    /**
+     * 批量导入员工
+     *
+     * @param adminId 当前管理员id
+     * @param file    这是由前端上传的excel文件
+     */
+    void importEmployee(Integer adminId, MultipartFile file);
+
+    /**
+     * 根据管理员id查询批量导入后待添加的员工
+     *
+     * @param adminId 管理员id
+     * @return
+     */
+    List<TmpEmployee> employeeTmp(Integer adminId);
+
+    /**
+     * 把批量导入的员工插入到员工表
+     *
+     * @param adminId 管理员id
+     */
+    void postEmployeeTmp(Integer adminId);
 }
