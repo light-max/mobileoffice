@@ -79,6 +79,7 @@ public enum GlobalConstant implements Assert {
     signinTimeNotExists("这个部门还没有设置签到时间"),
     signinTimeNotSelectTime("请选择签到时间"),
     signinTimeBefore("上班签到必须在下班签到之前"),
+    signinTimeSignIn("今天有人签过到了，只能等明天再更新"),
 
     signinEmployeeNoDepartment("员工还没有分配部门，无法签到"),
     signinDepartmentNotSigninTime("员工所在部门还未设置签到规则，无法签到"),

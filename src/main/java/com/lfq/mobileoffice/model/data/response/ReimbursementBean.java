@@ -10,6 +10,8 @@ import java.util.List;
 
 /**
  * 附带{@link Resource}与{@link BillItem}的报销记录对象
+ *
+ * @author 李凤强
  */
 public class ReimbursementBean extends Reimbursement {
 

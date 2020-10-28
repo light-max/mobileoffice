@@ -11,10 +11,8 @@ import com.lfq.mobileoffice.model.entity.TmpEmployee;
 import com.lfq.mobileoffice.service.DepartmentService;
 import com.lfq.mobileoffice.service.EmployeeService;
 import com.lfq.mobileoffice.util.UseDefaultSuccessResponse;
+import com.lfq.mobileoffice.util.WorkbookTools;
 import com.lfq.mobileoffice.util.ump.ViewModelParameter;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -130,7 +127,7 @@ public class EmployeeController {
     @GetMapping("/employee/batch/template")
     @ResponseBody
     public ResponseEntity<byte[]> template() throws Exception {
-        return getResponseEntity(employeeService.template(false));
+        return WorkbookTools.toResponseEntity(employeeService.template(false), "template");
     }
 
     /**
@@ -139,24 +136,7 @@ public class EmployeeController {
     @GetMapping("/employee/batch/template/depatement")
     @ResponseBody
     public ResponseEntity<byte[]> templateDepartment() throws IOException {
-        return getResponseEntity(employeeService.template(true));
-    }
-
-    /**
-     * @see #template()
-     * @see #templateDepartment()
-     */
-    private ResponseEntity<byte[]> getResponseEntity(XSSFWorkbook workbook) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        workbook.write(out);
-        byte[] bytes = out.toByteArray();
-        HttpHeaders headers = new HttpHeaders();
-        String mediaType = "application/octet-stream";
-        headers.add("Content-Disposition", "filename=template.xlsx");
-        return ResponseEntity.ok().headers(headers)
-                .contentLength(bytes.length)
-                .contentType(MediaType.parseMediaType(mediaType))
-                .body(bytes);
+        return WorkbookTools.toResponseEntity(employeeService.template(true), "template");
     }
 
     /**

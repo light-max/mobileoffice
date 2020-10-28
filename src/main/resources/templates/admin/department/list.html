@@ -203,12 +203,12 @@
                     <th>部门描述</th>
                     <th class="text-center">部门人数</th>
                     <th class="text-center">创建时间</th>
-                    <th style="width: 200px;" class="text-center">操作</th>
+                    <th style="width: 220px;" class="text-center">操作</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr th:each="d:${departments}">
-                    <td th:text="${d.id}"></td>
+                    <th th:text="${d.id}"></th>
                     <td class="text-truncate" th:text="${d.name}"></td>
                     <td class="text-truncate" th:text="${d.des}"></td>
                     <td class="text-center">
@@ -219,6 +219,7 @@
                         <a href="#" class="btn-link text-danger" th:onclick="'deleteDepartment('+${d.id}+')'">删除</a>
                         <a href="#" class="btn-link" th:onclick="'updateDialog('+${d.id}+')'">编辑</a>
                         <a href="#" class="btn-link" th:onclick="'signInDialog('+${d.id}+')'">签到设置</a>
+                        <a th:href="@{/admin/attendance/list(department=${d.id})}" class="btn-link">查看考勤</a>
                     </td>
                 </tr>
                 </tbody>

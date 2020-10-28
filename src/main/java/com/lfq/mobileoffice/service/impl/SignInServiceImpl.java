@@ -22,8 +22,8 @@ import java.util.List;
 
 @Service
 public class SignInServiceImpl implements SignInService {
-
     private final int ONE_DAY = 1000 * 60 * 60 * 24;
+    private final int TIME_DIFFERENCE = 1000 * 60 * 60 * 8;
 
     @Resource
     SignInTimeMapper signInTimeMapper;
@@ -45,6 +45,22 @@ public class SignInServiceImpl implements SignInService {
                 .orderByDesc(SignInTime::getCreateTime)
                 .last("limit 1");
         return signInTimeMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public SignInTime getByDate(int department, long date) {
+        // 这一天的末尾
+        long dayEnd = ((date - TIME_DIFFERENCE) / ONE_DAY + 1) * ONE_DAY + TIME_DIFFERENCE;
+        List<SignInTime> signInTimes = signInTimeMapper.selectList(new QueryWrapper<SignInTime>()
+                .lambda()
+                .eq(SignInTime::getDepartmentId, department)
+                .le(SignInTime::getCreateTime, dayEnd));
+        // 如果是空的，就添加一个当前的，但当前的有可能也是空的
+        if (signInTimes.isEmpty()) {
+            return current(department);
+        } else {
+            return signInTimes.get(0);
+        }
     }
 
     @Override
@@ -70,6 +86,32 @@ public class SignInServiceImpl implements SignInService {
         GlobalConstant.signinTimeBefore.isTrue(
                 LocalTime.parse(before).isBefore(LocalTime.parse(after))
         );
+
+        SignInTime current = current(departmentId);
+
+        // 第三个限制
+        if (current != null) {
+            Integer count = signInMapper.selectCount(new QueryWrapper<SignIn>()
+                    .lambda()
+                    .eq(SignIn::getSignInTimeId, current.getId()));
+            if (count == 0) {
+                signInTimeMapper.deleteById(current.getId());
+            }
+        }
+
+        // 第一个限制
+        if (current != null) {
+            long start = (System.currentTimeMillis() + TIME_DIFFERENCE) / ONE_DAY * ONE_DAY - TIME_DIFFERENCE;
+            long end = start + ONE_DAY;
+            Integer count = signInMapper.selectCount(new QueryWrapper<SignIn>()
+                    .lambda()
+                    .eq(SignIn::getSignInTimeId, current.getId())
+                    .gt(SignIn::getCreateTime, start)
+                    .lt(SignIn::getCreateTime, end));
+            GlobalConstant.signinTimeSignIn.isTrue(count == 0);
+        }
+
+        // 第二个限制
         SignInTime signInTime;
         LambdaQueryWrapper<SignInTime> wrapper = new QueryWrapper<SignInTime>().lambda()
                 .eq(SignInTime::getDepartmentId, departmentId)
@@ -103,7 +145,7 @@ public class SignInServiceImpl implements SignInService {
         SignInTime current = current(department.getId());
         GlobalConstant.signinDepartmentNotSigninTime.notNull(current);
         // 检查今天是否已经签过到的wrapper
-        long currentDayTime = System.currentTimeMillis() / ONE_DAY * ONE_DAY;
+        long currentDayTime = (System.currentTimeMillis() + TIME_DIFFERENCE) / ONE_DAY * ONE_DAY - TIME_DIFFERENCE;
         LambdaQueryWrapper<SignIn> wrapper = new QueryWrapper<SignIn>()
                 .lambda()
                 .eq(SignIn::getEmployeeId, employee.getId())

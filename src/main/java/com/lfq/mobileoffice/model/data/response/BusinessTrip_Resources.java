@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * 出差表对象，附带{@link Resource}的对象
+ *
+ * @author 李凤强
  */
 public class BusinessTrip_Resources extends BusinessTrip {
 

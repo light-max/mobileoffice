@@ -20,6 +20,15 @@ public interface SignInService {
     SignInTime current(Integer departmentId);
 
     /**
+     * 按部门id查询某一天的签到时间，如果这一天的签到时间没有，就返回当前的签到时间
+     *
+     * @param department 部门id
+     * @param date       日期
+     * @return
+     */
+    SignInTime getByDate(int department, long date);
+
+    /**
      * 根据部门id获取此部门所有签到时间
      *
      * @param departmentId 部门id
@@ -29,7 +38,9 @@ public interface SignInService {
 
     /**
      * 设置新的签到时间<br>
+     * <b>如果今天已经有人签到了，就只能等明天再更新了</b><br>
      * <b>如果是以前设置过的时间则会覆盖</b>
+     * <b>如果当前的签到时间没人签到，就会被删除</b>
      *
      * @param departmentId 会议室id
      * @param before       开始时间
