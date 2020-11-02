@@ -35,6 +35,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/travel/application/**")// 员工出差申请
                 .addPathPatterns("/reimbursement/application/**")// 员工报销申请
                 .addPathPatterns("/employee/info/**")// 员工修改信息
+                .addPathPatterns("/employee/attendance/**")//员工自己查看自己的考勤
         ;
     }
 

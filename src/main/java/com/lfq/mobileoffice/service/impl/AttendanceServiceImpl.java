@@ -2,11 +2,13 @@ package com.lfq.mobileoffice.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.lfq.mobileoffice.constant.GlobalConstant;
 import com.lfq.mobileoffice.mapper.DepartmentMapper;
 import com.lfq.mobileoffice.mapper.EmployeeMapper;
 import com.lfq.mobileoffice.mapper.SignInMapper;
 import com.lfq.mobileoffice.mapper.SignInTimeMapper;
 import com.lfq.mobileoffice.model.data.response.Attendance;
+import com.lfq.mobileoffice.model.data.response.EmployeeAttendance;
 import com.lfq.mobileoffice.model.entity.Employee;
 import com.lfq.mobileoffice.model.entity.SignIn;
 import com.lfq.mobileoffice.model.entity.SignInTime;
@@ -19,9 +21,12 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @Service
 public class AttendanceServiceImpl implements AttendanceService {
@@ -132,5 +137,47 @@ public class AttendanceServiceImpl implements AttendanceService {
             row.createCell(i).setCellValue(a.getStatusString0());
         }
         return workbook;
+    }
+
+    @Override
+    public List<EmployeeAttendance> employee(int employeeId, int year, int month) {
+        List<EmployeeAttendance> list = new ArrayList<>();
+        LocalDate begin = LocalDate.of(year, month, 1);
+        LocalDate currentDate = LocalDate.now(TimeZone.getTimeZone("GMT+8:00").toZoneId());
+        Employee employee = employeeMapper.selectById(employeeId);
+        LocalDate createDate = LocalDate.ofInstant(
+                Instant.ofEpochMilli(employee.getCreateTime()),
+                TimeZone.getTimeZone("GMT+8:00").toZoneId()
+        );
+        GlobalConstant.employeeNotExist.notNull(employee);
+        for (LocalDate next = begin;
+             next.getMonthValue() == begin.getMonthValue();
+             next = next.plusDays(1)) {
+            if (next.isAfter(currentDate)) {
+                break;
+            }
+            if (next.isBefore(createDate)) {
+                continue;
+            }
+            long start = next.toEpochDay() * ONE_DAY - TIME_DIFFERENCE;
+            long end = start + ONE_DAY;
+            LambdaQueryWrapper<SignIn> wrapper = new QueryWrapper<SignIn>()
+                    .lambda()
+                    .eq(SignIn::getEmployeeId, employeeId)
+                    .gt(SignIn::getCreateTime, start)
+                    .lt(SignIn::getCreateTime, end);
+            SignIn toWork = signInMapper.selectOne(wrapper.clone().eq(SignIn::getType, 1));
+            SignIn offWork = signInMapper.selectOne(wrapper.eq(SignIn::getType, 2));
+            SignInTime signInTime = null;
+            if (toWork != null) {
+                signInTime = signInTimeMapper.selectById(toWork.getSignInTimeId());
+            } else {
+                if (employee.getDepartment() != null) {
+                    signInTime = signInService.getByDate(employee.getDepartment(), start);
+                }
+            }
+            list.add(new EmployeeAttendance(next, signInTime, toWork, offWork));
+        }
+        return list;
     }
 }
