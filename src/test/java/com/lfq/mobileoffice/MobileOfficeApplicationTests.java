@@ -1,6 +1,7 @@
 package com.lfq.mobileoffice;
 
 import com.lfq.mobileoffice.mapper.AdminMapper;
+import com.lfq.mobileoffice.mapper.NoticeReadMapper;
 import com.lfq.mobileoffice.model.entity.*;
 import com.lfq.mobileoffice.service.*;
 import com.lfq.mobileoffice.util.IdCardCreateUtil;
@@ -37,6 +38,9 @@ class MobileOfficeApplicationTests {
 
     @Resource
     EquipmentService equipmentService;
+
+    @Resource
+    NoticeReadMapper noticeReadMapper;
 
     @Test
     void contextLoads() {
@@ -167,5 +171,15 @@ class MobileOfficeApplicationTests {
             noticeService.addNotice(notice);
         }
     }
-    
+
+    @Test
+    public void insertNoticeReader() {
+        for (Employee employee : employeeService.list()) {
+            NoticeRead build = NoticeRead.builder()
+                    .noticeId(315)
+                    .employeeId(employee.getId())
+                    .build();
+            noticeReadMapper.insert(build);
+        }
+    }
 }
