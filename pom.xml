@@ -15,7 +15,7 @@
     <description>毕业设计-移动办公微应用</description>
 
     <properties>
-        <java.version>11</java.version>
+        <java.version>12</java.version>
     </properties>
 
     <dependencies>
@@ -61,7 +61,7 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.3.2</version>
+            <version>3.4.1</version>
         </dependency>
         <!--swagger-->
         <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->

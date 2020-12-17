@@ -74,7 +74,7 @@ public class NoticeServiceImpl extends ServiceImpl<NoticeMapper, Notice> impleme
                     .lambda()
                     .eq(NoticeRead::getNoticeId, notice.getId());
             Integer count = noticeReadMapper.selectCount(wrapper);
-            System.out.println(notice.getId() + ":" + count);
+//            System.out.println(notice.getId() + ":" + count);
             map.put(notice.getId(), count);
         }
         return map;

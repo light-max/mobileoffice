@@ -45,13 +45,16 @@ public class SALoginController {
      * @param pwd      密码
      */
     @PostMapping("/sys/login")
+    @ViewModelParameters({
+            @ViewModelParameter(key = "action", value = "/sys/login"),
+            @ViewModelParameter(key = "role", value = "系统管理员")
+    })
     public String login(Model model, HttpSession session, String username, String pwd) {
         Response<SysAdmin> response = loginService.sys(username, pwd);
         if (response.isSuccess()) {
             session.setAttribute("sysadmin", response.getData());
             return "redirect:/sys";
         } else {
-            login(model);
             model.addAttribute("error", response.getMessage());
             model.addAttribute("username", username);
             model.addAttribute("pwd", pwd);

@@ -34,7 +34,6 @@ public class LoginServiceImpl implements LoginService {
                 .eq(SysAdmin::getUsername, username)
                 .eq(SysAdmin::getPwd, password);
         SysAdmin sysAdmin = sysAdminMapper.selectOne(wrapper);
-        System.out.println(sysAdmin);
         try {
             GlobalConstant.loginError.notNull(sysAdmin);
             return Response.success(sysAdmin);
