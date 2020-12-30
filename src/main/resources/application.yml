@@ -29,3 +29,5 @@ mobileoffice:
     employee: F:/mobileoffice/employee
   global-exception:
     assert-exception: true
+server:
+  port: 8087
