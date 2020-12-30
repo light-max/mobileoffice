@@ -52,9 +52,9 @@ public class NoticeController {
         Notice top = noticeService.getOne(new QueryWrapper<Notice>().eq("top", true));
         List<Notice> notices = page.getRecords();
         Pager pager = new Pager(page, "/admin/notice/list/");
-//        if (top != null) {
-//            notices.add(top);
-//        }
+        if (top != null) {
+            notices.add(top);
+        }
         Map<Integer, Integer> readCountMap = noticeService.queryReadCountMap(notices);
         notices.remove(top);
         model.addAttribute("top", top);
