@@ -76,6 +76,8 @@ public class RoomServiceImpl extends ServiceImpl<RoomMapper, Room> implements Ro
         }
         if (capacity != null) {
             wrapper.ge(Room::getCapacity, capacity);
+        } else {
+            wrapper.ge(Room::getCapacity, 0);
         }
         if (start != null && end != null) {
             return baseMapper.selectByTime(wrapper, page, start, end);
