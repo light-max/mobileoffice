@@ -76,7 +76,7 @@ public class AdminsController {
     public String update(Model model, Admin admin) {
         try {
             adminService.updateInfo(admin);
-            return "redirect:/sys/admin/success";
+            return "redirect:/sysadmin/admin/success";
         } catch (AssertException e) {
             model.addAttribute("admin", admin);
             model.addAttribute("error_info", e.getMessage());
